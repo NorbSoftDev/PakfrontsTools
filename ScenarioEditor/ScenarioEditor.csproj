@@ -96,7 +96,7 @@
       <HintPath>..\Libraries\IronPython\IronPython.dll</HintPath>
     </Reference>
     <Reference Include="LumenWorks.Framework.IO">
-      <HintPath>..\LumenWorks.Framework.IO.dll</HintPath>
+      <HintPath>..\Libraries\LumenWorks.Framework.IO.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic">
       <HintPath>..\Libraries\Microsoft.Dynamic.dll</HintPath>
