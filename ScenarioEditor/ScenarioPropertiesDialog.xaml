@@ -1,0 +1,53 @@
+﻿<local:AbstractDialog x:Class="ScenarioEditor.ScenarioPropertiesDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ScenarioEditor"
+        Title="ScenarioPropertiesDialog" Height="300" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"  Text="Scenario Properties" TextAlignment="Center"   HorizontalAlignment="Stretch"  Background="LightBlue"/>
+        
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" Text="Mod Folder:" Background="AliceBlue"/>
+        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="dirText" Text="Dir" Background="AliceBlue"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" Text="Scenario Name:" Background="AliceBlue"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Name="saveAsText" Text="NameGoesHere" TextChanged="saveAsText_TextChanged"  Background="Bisque"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="1" Text="Player:" Background="AliceBlue"/>
+        <TextBlock Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="playerText" Text="Player" Background="AliceBlue"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="1" Text="Weather:" Background="AliceBlue"/>
+        <ComboBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Name="weatherCombo" SelectionChanged="weatherCombo_SelectionChanged" />
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Strategic AI:" Background="AliceBlue"/>
+        <CheckBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding strategicAI}" />
+
+        <TextBlock Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="1" Text="Carry Over:" Background="AliceBlue"/>
+        <CheckBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding carryover}" />
+
+        <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Sandbox Mode:" Background="AliceBlue"/>
+        <ComboBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Name="sandboxCombo" SelectionChanged="sandboxCombo_SelectionChanged" />
+
+        <Button Grid.Column="0" Grid.Row="15" Margin="5,5,5,2" Content="Cancel" MinWidth ="30" HorizontalAlignment="Stretch" Click="cancel_Click"/>
+        <Button Grid.Column="1" Grid.Row="15" Margin="5,5,5,2" Content="Don't Save" MinWidth ="30" HorizontalAlignment="Stretch" Click="dontSave_Click" Name="dontSaveButton"/>
+        <Button Grid.Column="2" Grid.Row="15" Margin="5,5,5,2" Content="Save" MinWidth ="80" HorizontalAlignment="Stretch" Click="assign_Click"/>
+    </Grid>
+</local:AbstractDialog>

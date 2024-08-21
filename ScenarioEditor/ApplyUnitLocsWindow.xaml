@@ -1,0 +1,383 @@
+﻿<Window x:Class="ScenarioEditor.ApplyUnitLocsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ScenarioEditor" x:Name="SOWScenarioEditor"
+        Title="ApplyUnitLocsWindow" Height="400" Width="1000">
+    <Window.Resources>
+        <local:RankToBrushConverter x:Key="RankToBrushConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"></BooleanToVisibilityConverter>
+        <Style x:Key="styleEchelonRankShaded" TargetType="{x:Type TextBlock}">
+            <Setter Property="Background" Value="{Binding unit.echelon, Converter={StaticResource RankToBrushConverter}}"/>
+        </Style>
+        
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Column="2" Grid.Row="0" Content="{Binding modifier.summary}"  MinWidth="20" MinHeight="20" CommandParameter="{Binding}" Click="editModifier_Click"/>
+
+
+            <ListView Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"   Name="unitsList" Margin="0,11.6,-0.4,18" Grid.RowSpan="2" HorizontalAlignment="Stretch">
+
+
+            <!--<ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="IsEnabled" 
+                        Value="{Binding active}"/>
+                </Style>
+            </ListView.ItemContainerStyle>-->
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=active}" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.View>
+
+
+                <GridView>
+
+                    <GridViewColumn Header="Rank" Width="40">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding unit.echelon.symbol, Mode = OneWay}" HorizontalAlignment="Right" TextAlignment="Right" Style="{StaticResource styleEchelonRankShaded}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <!--CellStyle="{StaticResource styleEchelonRankShaded}-->
+
+                    <GridViewColumn Header="Id" Width="200" DisplayMemberBinding="{Binding unit}"/>
+
+                    <GridViewColumn Header="Apply?" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding active, Mode = TwoWay}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Modifier" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                    <CheckBox IsChecked="{Binding IsLocallyModified, Mode=TwoWay}" />
+                                    <!--<Button Content="{Binding modifier.summary}" IsEnabled="{Binding IsLocallyModified}" MinWidth="20" MinHeight="20" CommandParameter="{Binding}" Click="editModifier_Click"/>
+                                    <TextBlock Text="{Binding modifier.summary}" IsEnabled="{Binding IsLocallyModified, Converter={StaticResource InverseBooleanConverter}}" MinWidth="20" MinHeight="20"/>
+                                    -->
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    
+
+                    
+                    <GridViewColumn Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel  Orientation="Horizontal">
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="Transform"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <CheckBox Background="Orange"     Grid.Column="0" Grid.Row="1"  IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type Window}}, Path=DataContext.modifier.transform}" IsEnabled="{Binding IsLocallyModified}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Background="LightGray">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="1*" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Background="LightGray" Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding unit.transform}"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="3" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding PreviewTransform}" Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="Orange"     Grid.Column="1" Grid.Row="0" Text="{Binding transform}"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <CheckBox Background="Orange"     Grid.Column="2" Grid.Row="0"  IsChecked="{Binding  modifier.transform, Mode=TwoWay}" IsEnabled="{Binding IsLocallyModified}"/>
+
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    
+                    <GridViewColumn Width="100">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel  Orientation="Horizontal">
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="Head Count"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBox Background="Red" Grid.Column="0" Grid.Row="1"  Text="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type Window}}, Path=DataContext.modifier.ammo}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Background="LightGray">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="1*" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Background="LightGray" Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding unit.headCount}"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="5" Grid.Row="0" Grid.RowSpan ="3" Text="="                          Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="6" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding PreviewHeadCount}" Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Red"     Grid.Column="1" Grid.Row="0" Text="?"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Red"     Grid.Column="2" Grid.Row="0" Text="{Binding headCount}"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Red"      Grid.Column="3" Grid.Row="0" Text="*"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBox Background="Red"      Grid.Column="4" Grid.Row="0"  Text="{Binding modifier.headCount}" IsEnabled="{Binding IsLocallyModified}" />
+
+
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel  Orientation="Horizontal">
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="Ammo"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBox Background="SteelBlue" Grid.Column="0" Grid.Row="1"  Text="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type Window}}, Path=DataContext.modifier.ammo}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Background="LightGray">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="1*" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Background="LightGray" Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding unit.ammo}"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="5" Grid.Row="0" Grid.RowSpan ="3" Text="="                          Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="6" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding PreviewAmmo}" Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="SteelBlue"     Grid.Column="1" Grid.Row="0" Text="-"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="SteelBlue"     Grid.Column="2" Grid.Row="0" Text="{Binding ammo}"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="SteelBlue"      Grid.Column="3" Grid.Row="0" Text="*"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBox Background="SteelBlue"      Grid.Column="4" Grid.Row="0"  Text="{Binding modifier.ammo}" IsEnabled="{Binding IsLocallyModified}" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel  Orientation="Horizontal">
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="Formation"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <CheckBox Background="Orange"     Grid.Column="0" Grid.Row="1"  IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type Window}}, Path=DataContext.modifier.formation}" IsEnabled="{Binding IsLocallyModified}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Background="LightGray">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="1*" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Background="LightGray" Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding unit.formation}"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="5" Grid.Row="0" Grid.RowSpan ="3" Text="="                          Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="6" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding PreviewFormation}" Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Firebrick"     Grid.Column="1" Grid.Row="0" Text="-"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Firebrick"     Grid.Column="2" Grid.Row="0" Text="{Binding formation}"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Firebrick"      Grid.Column="3" Grid.Row="0" Text="*"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBox Background="Firebrick"      Grid.Column="4" Grid.Row="0"  Text="{Binding modifier.formation}" IsEnabled="{Binding IsLocallyModified}" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+
+                    <!--<GridViewColumn Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel  Orientation="Horizontal">
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="Fatigue"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <CheckBox Background="Orange"     Grid.Column="0" Grid.Row="1"  IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type Window}}, Path=DataContext.modifier.fatigue}" IsEnabled="{Binding IsLocallyModified}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Background="LightGray">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="1*" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Background="LightGray" Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding unit.fatigue}"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="5" Grid.Row="0" Grid.RowSpan ="3" Text="="                          Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="6" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding PreviewFatigue}" Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Firebrick"     Grid.Column="1" Grid.Row="0" Text="-"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Firebrick"     Grid.Column="2" Grid.Row="0" Text="{Binding fatigue}"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Firebrick"      Grid.Column="3" Grid.Row="0" Text="*"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBox Background="Firebrick"      Grid.Column="4" Grid.Row="0"  Text="{Binding modifier.fatigue}" IsEnabled="{Binding IsLocallyModified}" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="200">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel  Orientation="Horizontal">
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="Morale"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <CheckBox Background="Orange"     Grid.Column="0" Grid.Row="1"  IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type Window}}, Path=DataContext.modifier.morale}" IsEnabled="{Binding IsLocallyModified}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Background="LightGray">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="1*" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Background="LightGray" Grid.Column="0" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding unit.morale}"   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="5" Grid.Row="0" Grid.RowSpan ="3" Text="="                          Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+                                    <TextBlock Background="LightBlue" Grid.Column="6" Grid.Row="0" Grid.RowSpan ="3" Text="{Binding PreviewMorale}" Visibility="{Binding active, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Firebrick"     Grid.Column="1" Grid.Row="0" Text="-"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Firebrick"     Grid.Column="2" Grid.Row="0" Text="{Binding morale}"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBlock Background="Firebrick"      Grid.Column="3" Grid.Row="0" Text="*"  Visibility="{Binding active, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Stretch" TextAlignment="Center"/>
+
+                                    <TextBox Background="Firebrick"      Grid.Column="4" Grid.Row="0"  Text="{Binding modifier.morale}" IsEnabled="{Binding IsLocallyModified}" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>-->
+
+                </GridView>
+                
+                
+            </ListView.View>
+
+            <!--Group by parent unit. Name is actually the stats object used as the group-->
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+
+
+        </ListView>
+
+
+        <!--<Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" MinWidth ="80" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="60" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="CSV File" VerticalAlignment="Center"/>
+            <TextBlock  Grid.Column="1" Text="CSV File" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+            <Button  Grid.Column="2" Content="..." DockPanel.Dock="Right" Width="80" VerticalAlignment="Center"/>
+        </Grid>-->
+
+
+        <Button Grid.Column="0" Grid.Row="3" Content="Apply" MinWidth ="80" HorizontalAlignment="Stretch" Click="accept_Click" />
+        <Button Grid.Column="2" Grid.Row="3" Content="Close" MinWidth ="80" HorizontalAlignment="Stretch" Click="close_Click" />
+
+    </Grid>
+</Window>

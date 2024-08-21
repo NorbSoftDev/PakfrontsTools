@@ -1,0 +1,83 @@
+$Msg_01 
+<p align='center'><h3>Headquarters</h3>
+<p align='center'>in the field</p>
+<p></p>
+<p>2:00 p.m., June 18th, 1815</p>
+<p></p>
+<p></p>
+<p>General,</p>
+<p>The enemy are attacking in strength out of the woods. Send help immediately.</p>
+<p></p>
+<p></p>
+<p align='right'> Cavalry picket   </p>
+<p align='right'>     </p>
+<p></p>
+<p></p>
+<p></p>
+//
+//
+//
+
+$EndMajorFail 
+<p>Near Waterloo, Belgium. Our forces have suffered a major defeat at the hands of our bitter enemies. A full retreat has begun, and our forces are starting to reorganize. Grievous mistakes were made on the battlefield by commanders at all levels. Reserves must be called up immediately to refill the ranks for the next battle.</p>
+//
+//
+
+$EndMinorFail 
+<p>Near Waterloo, Belgium. We have met the enemy in battle with less than total success. In spite of brave actions by our gallant forces the enemy has gained the upper hand. Our forces have pulled back to reorganize and resupply for the upcoming conflict.</p>
+//
+//
+
+$EndDraw 
+<p>Near Waterloo, Belgium. Battle has been joined with the forces of the enemy. Great efforts have been made, but no advantage has been gained by either side. Our gallant forces are resupplying and preparing. Battle is expected again soon.</p>
+//
+//
+
+$EndMinorSuccess 
+<p>Near Waterloo, Belgium. We have met the enemy near this place and have pushed their battalions back across the battlefield. A strong rearguard has given the enemy a chance to reorganize and resupply for battles ahead.</p>
+//
+//
+
+$EndMajorSuccess 
+<p>Near Waterloo, Belgium. Our gallant forces have inflicted a crushing defeat on the enemy army. A number of guns have been captured, and our cavalry forces are harrying the rapidly retreating elements of their rearguard. Dispirited enemy soldiers have surrendered in large numbers. </p>
+//
+//
+
+$EndKilled 
+<p>Near Waterloo, Belgium. Another gallant officer made the supreme sacrifice for his country this day.</p>
+<p>A good officer will have to be found and promoted to replace this fallen leader.</p>
+//
+//
+//
+
+<!-- ######## FRAMEWORK TEXT FOR OUTGOING COURIER MESSAGE ###############
+// -->
+
+$CourMsg 
+<p><h3 align='center'> Dispatch </h3></p>
+<p>Time: <VAR=$msgtime></p>
+<p>From: <VAR=$msgsender></p>
+<p>To: <VAR=$msgrecv></p>
+<p>Execution Time: <VAR=$msgstart></p>
+<p></p>
+<p></p>
+<p><VAR=$msgrecv>, <VAR=$msgmeat></p>
+<p></p>
+<p></p>
+<p align='right'>Your obedient servant,</p>
+<p align='right'><VAR=$msgsender></p>
+<p></p>
+<!-- end general framework -->
+
+$CEnemySee  
+<p></p>
+<p>The enemy has been sighted in my vicinity.</p>
+<p></p>
+<p></p>
+<!-- break -->
+
+$CEnemyEng
+<p></p>
+<p>I have engaged the enemy.</p>
+<p></p>
+<!-- break -->

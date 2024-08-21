@@ -1,0 +1,82 @@
+﻿<local:AbstractDialog x:Class="ScenarioEditor.FormationDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ScenarioEditor"
+        Title="EventDialog" Height="300" Width="400"
+        WindowStyle="None"
+        KeyDown="WindowKeyDown">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="120" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="30" />
+
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0"  Orientation="Horizontal">
+            <Label Content="Formations"/>
+            <Label Content="Filter Level:"/>
+            <!--<Label Content="{Binding Path=FilterLevel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>-->
+            <ComboBox Loaded="ComboBox_Loaded"  SelectionChanged="ComboBox_SelectionChanged"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" Name="Line" Content="Line" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_lineFormation"/>
+            <Button Grid.Row="0" Grid.Column="1" Name="Fight" Content="Fight" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_fightingFormation"/>
+
+            <Button Grid.Row="1" Grid.Column="0" Name="Walk" Content="Walk" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_walkFormation"/>
+            <Button Grid.Row="1" Grid.Column="1" Name="Square" Content="Square" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_squareFormation"/>
+
+            <Button Grid.Row="2" Grid.Column="0" Name="Assault" Content="Assault" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_assaultFormation"/>
+            <Button Grid.Row="2" Grid.Column="1" Name="Special" Content="Special" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_specialFormation"/>
+            <Button Grid.Row="3" Grid.Column="0" Name="Skirmish" Content="Skirmish" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_skirmishFormation"/>
+            <Button Grid.Row="3" Grid.Column="1" Name="Alt" Content="Alt Skirmish" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_alternativeSkirmishFormation"/>
+            <Button Grid.Row="4" Grid.Column="0" Name="Half" Content="Column Half" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_columnHalfDistanceFormation"/>
+            <Button Grid.Row="4" Grid.Column="1" Name="Full" Content="Column Full" HorizontalContentAlignment="Left" MinWidth ="40" HorizontalAlignment="Stretch" Click="assign_columnFullDistanceFormation"/>
+        </Grid>
+        <ListView Grid.Row="2"  MouseDoubleClick="lv_DoubleClick"  Name="mainList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" Width="Auto" DisplayMemberBinding="{Binding id}" />
+                </GridView>
+            </ListView.View>
+
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock FontWeight="Bold" FontSize="14" Text="{Binding id}"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+        </ListView>
+
+        
+        
+        <Grid Grid.Row="3" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Assign" MinWidth ="80" HorizontalAlignment="Stretch" Click="assign_Click"/>
+            <Button Grid.Column="2" Content="Cancel" MinWidth ="30" HorizontalAlignment="Stretch" Click="cancel_Click"/>
+        </Grid>
+    </Grid>
+</local:AbstractDialog>

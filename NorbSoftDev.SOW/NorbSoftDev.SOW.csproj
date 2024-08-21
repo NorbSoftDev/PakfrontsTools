@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D86D2DEE-C2ED-4472-A86A-58F2D1B8D3B5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NorbSoftDev.SOW</RootNamespace>
+    <AssemblyName>NorbSoftDev.SOW</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevIL.NET2">
+      <HintPath>..\Libraries\DevIL\DevIL.NET2.dll</HintPath>
+    </Reference>
+    <Reference Include="IronPython">
+      <HintPath>..\Libraries\IronPython\IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="LumenWorks.Framework.IO">
+      <HintPath>..\Libraries\LumenWorks.Framework.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attribute.cs" />
+    <Compile Include="BattleResults.cs" />
+    <Compile Include="BattleScriptRandom.cs" />
+    <Compile Include="Headers.cs" />
+    <Compile Include="TemporaryEchelonTable.cs" />
+    <Compile Include="UnitLocs.cs" />
+    <Compile Include="UnitStats.cs" />
+    <Compile Include="BattleScript.cs" />
+    <Compile Include="Fort.cs" />
+    <Compile Include="LogisticsEntryBitmap.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="DeferredLogisticsReference.cs" />
+    <Compile Include="Echelon.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Formation.cs" />
+    <Compile Include="FormationReader.cs" />
+    <Compile Include="Graphic.cs" />
+    <Compile Include="IdCollection.cs" />
+    <Compile Include="IniReader.cs" />
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="IUnit.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="LogisticsEntry.cs" />
+    <Compile Include="Map.cs" />
+    <Compile Include="MapObjective.cs" />
+    <Compile Include="Mod.cs" />
+    <Compile Include="ObjectExtensions.cs" />
+    <Compile Include="ObjectFormatter.cs" />
+    <Compile Include="ObservableCollectionWithItemNotify.cs" />
+    <Compile Include="IdDictionary.cs" />
+    <Compile Include="ObservableDictionary.cs" />
+    <Compile Include="ObservableRoster.cs" />
+    <Compile Include="ObservableSortedList.cs" />
+    <Compile Include="OOBUnit.cs" />
+    <Compile Include="OrderOfBattle.cs" />
+    <Compile Include="Portrait.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scenario.cs" />
+    <Compile Include="ScenarioObjective.cs" />
+    <Compile Include="ScenarioUndoStack.cs" />
+    <Compile Include="ScenarioUnit.cs" />
+    <Compile Include="ScenarioUnitRoster.cs" />
+    <Compile Include="Screen.cs" />
+    <Compile Include="ScreenReader.cs" />
+    <Compile Include="Sky.cs" />
+    <Compile Include="Sound.cs" />
+    <Compile Include="SowStr.cs" />
+    <Compile Include="Sprite.cs" />
+    <Compile Include="Test.cs" />
+    <Compile Include="Transform.cs" />
+    <Compile Include="UnitAttribute.cs" />
+    <Compile Include="UnitClass.cs" />
+    <Compile Include="UnitModel.cs" />
+    <Compile Include="UnitRoster.cs" />
+    <Compile Include="UnitType.cs" />
+    <Compile Include="Weapon.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

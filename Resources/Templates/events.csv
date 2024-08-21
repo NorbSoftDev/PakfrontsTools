@@ -1,0 +1,27 @@
+eventname,type,help
+
+evttime,TimeEvent,Triggered when game clock reaches a certain time
+
+evtarrived,UnitPositionEvent,Triggered as soon as the named leader and unit arrive at the specified map location.
+evtiarrived,UnitPositionEvent,Triggered as soon as the named leader alone arrives at the specified map location. The location of the rest of this leaders command is not relevant to this command. Always followed by an evtcont line specifying the subsequent action to be taken.
+
+evtcont,ContinueEvent,Predicate for continuing a series of evt events.
+
+evtran,RandomEvent,Event Block choosen by ranevt command
+
+
+evtcourier,UnitEvent,Triggered when the commander defined in the ID Name column: has received a courier message. Since the AI throws couriers all around, use this carefully. The first event occurs when the first courier arrives, and the second event is triggered with the arrival of the second courier.
+evtdeath,UnitEvent,Triggered when the commander defined in ID Name column:has died. Events Always are placed After all clocked functions are complete
+evtdisttargl,UnitEvent,Triggered when any approaching enemy unit reaches the specified distance in yards.
+evtfailcheck,UnitEvent,Triggered when the commander defined in the ID Name column: has reached the fail grade
+evtfighting,UnitEvent,Triggered when the Commander defined in the ID Name column: has first engaged the enemy.
+evtgiveup,UnitEvent,Triggered when the Commander defined in the ID Name column: has given up. This means that they have lost all of their subordinate units.
+evtgrade,UnitEvent,Triggered when the Commander defined in the ID Name column: has reached a certain grade. Note that this is a greater than or equal to >= comparison and will not work to see if a unit has reached a low grade, only a high grade
+evtintrouble,UnitEvent,Triggered when the unit defined in the ID Name column: is in trouble. This state can be seen by the displaying of the in trouble icon over that unit. It usually means that all of their men need
+evtseetarg,UnitEvent,Triggered when the named unit sees any enemy unit, regardless of range.
+
+evtobjdone,ScenarioObjectiveEvent,Triggered when the conditions are met to complete an objective
+evtobjarmy1,ScenarioObjectiveEvent,Triggered only when army 1 has completed an objective
+evtobjarmy2,ScenarioObjectiveEvent,Triggered only when army 2 has completed an objective
+evtobjarmy3,ScenarioObjectiveEvent,Triggered only when army 3 has completed an objective
+evtobjarmy4,ScenarioObjectiveEvent,Triggered only when army 4 has completed an objective

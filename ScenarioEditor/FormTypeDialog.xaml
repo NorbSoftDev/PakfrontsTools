@@ -1,0 +1,47 @@
+﻿<local:AbstractDialog x:Class="ScenarioEditor.FormTypeDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ScenarioEditor"
+        Title="EventDialog" Height="300" Width="300"
+        WindowStyle="None"
+        KeyDown="WindowKeyDown">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0"  Orientation="Horizontal">
+            <Label Content="FormTypes"/>
+        </StackPanel>
+
+        <ListView Grid.Row="1"  Name="mainList" MouseDoubleClick="assign_Click" >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" Width="Auto" />
+                </GridView>
+            </ListView.View>
+
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock FontWeight="Bold" FontSize="14" Text="{Binding id}"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+        </ListView>
+
+        <Grid Grid.Row="2" >
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Assign" MinWidth ="80" HorizontalAlignment="Stretch" Click="assign_Click"/>
+            <Button Grid.Column="2" Content="Cancel" MinWidth ="30" HorizontalAlignment="Stretch" Click="cancel_Click"/>
+        </Grid>
+    </Grid>
+</local:AbstractDialog>

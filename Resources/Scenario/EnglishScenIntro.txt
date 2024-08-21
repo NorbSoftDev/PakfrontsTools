@@ -1,0 +1,10 @@
+<p align='center'><h3>{scenario.name}</h3></p>
+<p></p> 
+<p><color value='#00298B'>Length Of Play:<color value='#000000'>{scenario.duration}</p>
+<p><color value='#00298B'>Command: <color value='#000000'>{scenario.playerCommand}</p> 
+<p><color value='#00298B'>Time: <color value='#000000'>{scenario.startTime}</p> 
+<p><color value='#00298B'>Map: <color value='#000000'>{scenario.map}</p> 
+<p></p>
+<p></p>
+<p></p>
+<p></p

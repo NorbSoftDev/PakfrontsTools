@@ -1,0 +1,36 @@
+﻿<Window x:Class="ScenarioEditor.RandomEventDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CommandDialog" Height="300" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="80"/>
+        </Grid.ColumnDefinitions>
+        
+            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Content="Select or Create a Named Random Events"/>
+        <Label Grid.Row="0" Grid.Column="0" Content="{Binding Path=eventType,
+                          RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType=Window}}"/>
+            <Button Grid.Row="1" Grid.Column="0" Content="New Event:" Click="create_Click"/>
+        <TextBox Grid.Row="1" Grid.Column="2"  Text="NewEvent" Name="createTextBox"/>
+ 
+        <ListBox Grid.Row="2" Grid.ColumnSpan="3" Name="mainList" MinHeight="200">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <EventSetter Event="MouseDoubleClick" Handler="assign_Click"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+            <Button Grid.Row="3" Grid.Column="0" Content="Assign" Click="assign_Click"/>
+            <Button Grid.Row="3" Grid.Column="2" Content="Cancel" Click="cancel_Click"/>
+    </Grid>
+</Window>

@@ -1,0 +1,57 @@
+﻿<local:AbstractDialog x:Class="ScenarioEditor.CommandDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ScenarioEditor"
+        Title="CommandDialog" Height="300" Width="300"
+        WindowStyle="None"
+        KeyDown="WindowKeyDown">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label  Grid.Row="0"  Grid.ColumnSpan="2" HorizontalAlignment="Stretch" TextBlock.TextAlignment="Center"  Content="Set Command"/>
+        <Label  Grid.Row="1"  Grid.Column="0" HorizontalAlignment="Stretch" TextBlock.TextAlignment="Left"  Content="Filter:"/>
+
+        <TextBox Text="" Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Name="txtFilter" TextChanged="txtFilter_TextChanged" />
+
+
+        <ListView Grid.Row="2"  Grid.ColumnSpan="2"  MouseDoubleClick="assign_Click"  Name="mainList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" Width="80" DisplayMemberBinding="{Binding name}" />
+                    <GridViewColumn Header="Help"  DisplayMemberBinding="{Binding help}" />
+                </GridView>
+            </ListView.View>
+
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock FontWeight="Bold" FontSize="14" Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+        </ListView>
+
+        <Grid Grid.Row="3"  Grid.ColumnSpan="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Assign" MinWidth ="80" HorizontalAlignment="Stretch" Click="assign_Click"/>
+            <Button Grid.Column="2" Content="Cancel" MinWidth ="30" HorizontalAlignment="Stretch" Click="cancel_Click"/>
+        </Grid>
+    </Grid>
+</local:AbstractDialog>

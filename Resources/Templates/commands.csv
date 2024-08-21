@@ -1,0 +1,158 @@
+id,spec,category,commandType,help
+
+attackmarch,A,Move,UnitMoveToCommand,Commands the named unit to FORCE its movement regardless of enemy units. Up until contact.
+forcemove,A,Move,UnitMoveToCommand,Commands the selected/named Unit to move to the designated location regardless of a tcommon comand
+forcepath,,Move,UnitMoveToCommand,Regiment command only. It directs the named unit to move via roads. Equivalent to useroads for higher level commands.
+movepath,A,Move,UnitMoveToCommand, Command combines moveto and useroad. For brigade and higher sized units
+moveto,A,Move,UnitMoveToCommand,Commands the named Commander/Unit to move to a specified location (loc x, loc z)
+roadmarch,A,Move,UnitMoveToCommand,Commands the a unit to use the road, bypassing the “useroad” command
+
+form,A,Formation,UnitFormationCommand,Commands the selected/named Commander/Unit to assume a formation.
+
+tcalloff,,AI,Command,Sets TC off for all units
+tcallon,,AI,Command,Sets TC on for all units
+
+aboutface,A,Maneuver,UnitCommand,Commands unit to turn 180 degrees from current facing
+advance,A,Order,UnitCommand,Command unit to advance until it enters combat or it goes 300 yards
+artyfireai,A,Art,UnitCommand,Commands the AI for the selected artillery battery to pick its own targets
+artyfirearty,A,Art,UnitCommand,Commands the AI for the selected artillery battery to fire only at enemy artillery Units.
+artyfirehold,A,Art,UnitCommand,Commands the AI for the selected artillery battery to hold its fire. An artillery battery under the artyfirehold command will still fire canister in self defense if approached within canister range by an enemy unit
+artyfiretroops,A,Art,UnitCommand,Commands the AI for the selected artillery battery to fire only at enemy infantry and cavalry Units.
+attach,A,Order,UnitCommand,Commands the unit to attach itself to its Superior Commander
+charge,A,Order,UnitCommand,Commands the unit to charge. Must have an enemy unit within weapons range or within autocharge distance (35yds for infantry, 100 yds for cavalry).
+detach,A,Order,UnitCommand,Commands the unit to detach itself from its Superior Commander.
+fallback,,Order,UnitCommand,Commands the unit to fall back firing
+follownone,,Order,UnitCommand,Cavalry only. It directs the unit to stop guarding a named unit.
+getaway,,Order,UnitCommand,Forces a 100 yard retreat without morale or point penalties.
+hideunit,A,Game,UnitCommand,Commands unit to not be shown on the 3D map. This command is useful for hiding reinforcements until they are scheduled to arrive on the battlefield
+joinbrig,,Order,UnitCommand,Attach a segment of a unit previously split off
+justrun,,Order,UnitCommand,Unit runs in the direction it is currently facingshowunit,A,UnitCommand,NOHELP
+killoff,,Game,UnitCommand,Commands the named Commander to be killed.
+limber,,Order,UnitCommand,Commands the selected artillery battery or gun to limber or unlimber
+lockunit,A,Game,UnitCommand,Disables players ability to control the named unit.
+marchmusic,,Sound,UnitCommand,Forces playing of march music defined is sfx.csv
+mleftflank,A,Maneuver,UnitCommand,Commands the unit to move by the left flank
+mrightflank,A,Maneuver,UnitCommand,Commands the unit to move by the right flank
+mleftoblique,,Maneuver,UnitCommand,Orders the unit to advance by the left oblique
+mrightoblique,,Maneuver,UnitCommand,Orders the unit to advance by the right oblique
+onlydismount,A,Cav,UnitCommand,Cavalry command only. It directs the named unit to dismount.
+onlylaydown,A,Inf,UnitCommand,Infantry command only. It directs the named unit to laydown.
+onlylimber,A,Art,UnitCommand,Artillery command only. It directs the named unit to limber the gun(s)
+onlymount,A,Cav,UnitCommand,Cavalry command only. It directs the named unit to mount.
+onlyriseup,A,Inf,UnitCommand,Infantry or dismounted cavalry command only. It directs the named unit to standup.
+raid,A,Cav,UnitCommand,Cavalry command only. It directs the named unit to raid.
+resupply,,Order,UnitCommand,Commands the selected/named Unit to resupply at their unit supply wagon.
+retreat,A,Order,UnitCommand,Commands the selected/named Unit to retreat at walk speed 100 yards to the rear of its current facing.
+run,A,Order,UnitCommand,Commands the selected/named Commander/Unit to double-quick.
+scout,,Cav,UnitCommand,Cavalry command only. It directs the named unit to scout.
+screen,,Cav,UnitCommand,Cavalry command only. It directs the named unit to screen.
+showunit,A,Game,UnitCommand,Commands the named Commander/Unit to appear on the game map.
+splitbrig,,Order,UnitCommand,Detaches a segment of the named unit
+stop,A,Order,UnitCommand,Commands the selected/named Commander/Unit to halt
+switchcmn,A,Cav,UnitCommand,Commands the selected/named cavalry unit to mount or dismount.
+takecover,A,Order,UnitCommand,Commands the unit to go prone.
+tcofficers,A,AI,UnitCommand,NOHELP
+tcommoff,A,AI,UnitCommand,Release command of the selected/named Commander/Units back to the AI.
+tcommon,A,AI,UnitCommand,Takes command of the selected/named Commander/Units away from the AI.
+unlockunit,A,Game,UnitCommand,Returns to player his control of a previously locked unit.￼
+useroad,A,Order,UnitCommand,Directs the named unit to walk.
+volleyon,A,Order,UnitCommand,NOHELP
+walk,A,Order,UnitCommand,Directs the named unit to walk.
+wheelleft,A,Order,UnitCommand,Commands the selected/named Commander/Unit to wheel left 10 degrees
+wheelright,A,Order,UnitCommand,Commands the selected/named Commander/Unit to wheel right 10 degrees.
+split,,Order,UnitArgsCommand,Commands the named Unit to split. Number indicates percent
+unsplit,,Order,UnitCommand,Commands the named Unit reform from split units
+
+moveformfwd,A,Order,UnitArgsCommand,Commands the named Commander/Unit to move forward (X) yards to cover. 0 = do not stop on better terrain. 1 = Stop on better Terrain. This unit WILL keep formation
+movefwd,A,Order,UnitArgsCommand,Commands the named Commander/Unit to move forward (X) yards to cover. 0 = do not stop on better terrain. 1 = Stop on better Terrain. This unit WILL NOT keep formation.
+playmp3,,Sound,UnitArgsCommand,Play an mp3 file. MP3 sound file must be in the Music folder (also see stopmp3).
+setammo,A,Art,UnitArgsCommand,Command sets the ammo type for a gun (Solid, Shell, Canister, Shrapnel)
+stopmp3,,Sound,UnitArgsCommand,Stop playing an mp.
+
+altstart,A,Game,UnitPositionCommand,This command is for assigning an alternate starting location within the scripting, for a unit or command other than the OOB designated area.
+safeplace,A,Order,UnitPositionCommand,Designates a specific location on the game map for subordinate Units of the named Commander to retreat to, if forced to retreat. This command does not work with routed units.
+orderdest,A,Order,UnitPositionCommand,used in evtcont after orders command. Sets the x/z location for the specified order, usually in an event-driven sequence
+
+movespec:myfrontcenter,A,Order,UnitFromUnitCommand,Orders a unit to a specific location
+movespec:myfrontleft,A,Order,UnitFromUnitCommand,Orders a unit to a specific location
+movespec:myfrontright,A,Order,UnitFromUnitCommand,Orders a unit to a specific location
+movespec:myleftflank,A,Order,UnitFromUnitCommand,Orders a unit to a specific location
+movespec:myrearcenter,A,Order,UnitFromUnitCommand,Orders a unit to a specific location
+movespec:myrightflank,A,Order,UnitFromUnitCommand,Orders a unit to a specific location
+
+movespec:frontcenterof,A,Order,UnitArgUnitCommand,Orders a unit to a specific location
+movespec:frontleftof,A,Order,UnitArgUnitCommand,Orders a unit to a specific location
+movespec:frontrightof,A,Order,UnitArgUnitCommand,Orders a unit to a specific location
+movespec:leftflankof,A,Order,UnitArgUnitCommand,Orders a unit to a specific location
+movespec:rearcenterof,A,Order,UnitArgUnitCommand,Orders a unit to a specific location
+movespec:rightflank,A,Order,UnitArgUnitCommand,Orders a unit to a specific location
+
+movespec:east,A,Order,UnitArgDistanceCommand,Orders a unit to a specific location
+movespec:ne,A,Order,UnitArgDistanceCommand,Orders a unit to a specific location
+movespec:north,A,Order,UnitArgDistanceCommand,Orders a unit to a specific location
+movespec:nw,A,Order,UnitArgDistanceCommand,Orders a unit to a specific location
+movespec:se,A,Order,UnitArgDistanceCommand,Orders a unit to a specific location
+movespec:south,A,Order,UnitArgDistanceCommand,Orders a unit to a specific location
+movespec:sw,A,Order,UnitArgDistanceCommand,Orders a unit to a specific location
+movespec:west,A,Order,UnitArgDistanceCommand,Orders a unit to a specific location
+movespec:forward,A,Order,UnitArgDistanceCommand,Orders a unit to a specific location
+
+movespec:maploc,A,Order,UnitArgMapObjectiveCommand,Orders a unit to a specific location
+
+movespec:loc,A,Order,UnitMoveToCommand,Orders a unit to a specific location
+movespec:addpath,A,Order,UnitMoveToCommand,Orders a unit to a specific location
+
+
+formtype,A,Formation,UnitFormTypeCommand,Orders a unit to assume the given formation type, as assigned in unitglobal.csv
+
+tactics,,Order,UnitPositionArgsCommand,SPECIAL
+
+guard,,Cav,UnitArgUnitCommand,Cavalry command only. It directs the named unit to guard a named unit.
+
+enddir,A,Move,UnitDirectionCommand,The direction you want a unit or formation to face upon arrival at a location
+movedir,A,Move,UnitCommand,Commands the named Commander/Unit to move in a specified direction (dir x, dir z).
+
+altform,A,Game,UnitFormationCommand,This command is for assigning an alternate starting formation within the scripting, for a unit or command other than the OOB designated formation.
+
+
+orders:Blitz,A,Order,UnitOrderCommand,Commands that a stance order be issued to the named Commander.
+orders:Attack,A,Order,UnitOrderCommand,Commands that a stance order be issued to the named Commander.
+orders:Probe,A,Order,UnitOrderCommand,Commands that a stance order be issued to the named Commander.
+orders:Defend,A,Order,UnitOrderCommand,Commands that a stance order be issued to the named Commander.
+orders:Hold,A,Order,UnitOrderCommand,Commands that a stance order be issued to the named Commander.
+orders:Stay,A,Order,UnitOrderCommand,Commands that a stance order be issued to the named Commander.
+
+courier,,Order,CourierCommand,Commands the named Commander to send a message to the player’s Commander
+
+delevt,,Game,UnitEventCommand,Used to delete events that are not needed, for example after the death of a non-player commander
+
+ranevt,,Game,RandomEventCommand,Declare a random event.
+
+weather,,Env,WeatherCommand,changes the weather state as defined in rows 1 thru 25 of the unitattributes.csv file.
+
+logmsg,,Game,LogMsgCommand,adds a message to the player viewable list of received messages?
+
+objactivate,,Game,ScenarioObjectiveCommand,Commands that an objective listed on the maplocations.csv be activated.
+
+immortal,,Game,UnitCommand,Makes the unit unable to die
+
+dumpdead,,IO,Command,Saves the file /work/deadbods.csv that records the location of all dead bodies currently on the battlefield.
+dumpgamedb,,IO,Command,Saves the file /work/sowgb_gamedb_date_time.csv. Note that a separate file will be written every time this command is executed via command or keypress
+dumplocs,,IO,Command,Saves the file /work/startlocs.csv, containing the current location, facing and formation of all units on the battlefield
+
+endscenario,,GameEnd,Command,End the Scenario. It must be called via the events.csv to create the .mmc saved game file required for using the carryover command.
+endscenario:endplayerdie,,GameEnd,Command,End the Scenario. It must be called via the events.csv to create the .mmc saved game file required for using the carryover command.
+endscenario:endmajwin,,GameEnd,Command,End the Scenario. It must be called via the events.csv to create the .mmc saved game file required for using the carryover command.
+endscenario:endwin,,GameEnd,Command,End the Scenario. It must be called via the events.csv to create the .mmc saved game file required for using the carryover command.
+endscenario;endtie,,GameEnd,Command,End the Scenario. It must be called via the events.csv to create the .mmc saved game file required for using the carryover command.
+endscenario:endfail,,GameEnd,Command,End the Scenario. It must be called via the events.csv to create the .mmc saved game file required for using the carryover command.
+endscenario:endmajfail,,GameEnd,Command,End the Scenario. It must be called via the events.csv to create the .mmc saved game file required for using the carryover command.
+endscenario:endrouted,,GameEnd,Command,End the Scenario. It must be called via the events.csv to create the .mmc saved game file required for using the carryover command.
+endscenario:endroutedenemy,,GameEnd,Command,End the Scenario. It must be called via the events.csv to create the .mmc saved game file required for using the carryover command.
+
+
+night,,Env,Command,Change the sky to night. Use at the beginning of a scenario. Also use the appropriate “Weather=#”command to set the correct visibility (see below).
+sunrise,,Env,Command,Starts the sunrise sequence of sky effects
+sunset,,Env,Command,Starts the sunset sequence of sky effects.
+
+stopsfx,,Sound,Command,Stop playing all sound effects

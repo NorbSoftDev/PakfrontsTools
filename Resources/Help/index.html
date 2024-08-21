@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<body dir="ltr" bgcolor="#606060" text="#E0E0E0">
+<h1>Scourge Of War Scenario Editor</h1>
+
+<h2>Concepts</h2>
+<p>Scourge of War has two interrelated ways of storing unit information. "Orders of Battle" (OOB) store troops quality and attribute data, but do not store troop position or scripted actions. Scenarios load unit information from an OOB and then place those units on the field, and describe the events that occur during the scenario in the "Battlescript." There is an additional type of Scenario referd to as a "Sandbox" or "Stand-alone" scenario which has the OOB embedded inside the scenario files.</p>
+
+<p>The Scenario Editor's primary function is the creation and editing of new scenarios from existing OOBs. As a secondary function is can be used to create and edit Orders of Battle, either from scratch or from existing oobs and scenarios.</p>
+
+
+<h2>The Editor UI</h2>
+<p>The Editor is divided into two parts, top and bottom. The bottom has contains the Order of Battle, the top the current Scenario</p>
+
+<pre>
+********************************************
+* Name * Time * Cmndr*
+**********************
+* [Scenario Tree] +  *                     * 
+* [Forts Grid] +     *   [Scenario Map]    *
+* [Locations Grid] + *                     *
+* [Objectives Grid]  *                     *
+*                    ***********************
+*                    * [Scenario Grid] +   *
+*                    * [Battlescript Grid] *
+********************************************
+* [OOB Tree]         *       [OOB Grid]    *
+********************************************
+</pre>
+
+
+<h2>Creating a Scenario from an existing Order Of Battle</h2>
+
+<p>To create a new scenario from an existing order of battle</p>
+<ol>
+    <li>File->New Scenario...
+     <ul>
+        <li>In the left-most panel, make sure any desired Mods are activated, all others deactivated </li>
+        <li>In the middle panel, choose your map</li>
+        <li>In the right most panel, choose the OOB you will be selecting troops from</li>
+        <li>Press "Create", creation will take a few moments</li>
+    </ul>
+    </li>
+
+    <li>Initially, your scenario will have no units. Drag Units from OOB Tree to Scenario Tree to add them
+     <ul><li>Pressing and holding <b>shift</b> during this operation will drag subordinate units as well </li></ul>
+    </li>
+
+    <li> Place units on the map by dragging from the Scenario Tree to the Map. Again, holding <b>shift</b> will drag subordinates </li> 
+    <li>By default the scenario will be called "UnnamedScenario." You can change this by typing in the name field above the Scenario Tree.</li>
+    <li>Save the scneario through the File->Save Scenario menu. Note that all scenarios are saved in your Documents\SowWL\Scenarios folder. It is not possible to save scenarios or orders of battle directly into the Scourge of War game directory.></li>
+</ol>
+
+<h2>Editing a Scenario</h2>
+<ul>
+    <li>Setting Values
+    <ul>
+     <li>Use the Scenario Data Grid to enter values</li>
+     <li>Some columns have a "::" button to bring up an advance menu</li>
+     <li>Some columns have a ">" button to pan the map to that location</li>
+     <li>To edit multiple entries simultaneously, Multi-select the cells with ctrl and shift</li>
+     <li>Multi-select with dropdown comboboxes works best with shift</li>
+
+    </ul>
+    </li>
+</ul>
+<h3>Navigating the Map</h3>
+<ul>
+    <li>Pan the map:
+    <ul>
+     <li>use the scroll bars</li>
+     <li>press and holding the <b><font color="#3300CC">space bar</font></b>while clicking and dragging on the map</li>
+    </ul>
+	</li>
+	 <li>Pan the map to a unit:
+    <ul>
+     <li>select the unit and press <b><font color="#3300CC">C</font></b></li>
+     <li>double click on the unit in the TreeView</li>
+	 <li>press the '>' button next to it's position entry in the spreadsheet</li>
+    </ul>
+	</li>
+	</li>
+	 <li>Zoom the map
+    <ul>
+     <li>use the mouse scroll wheel</li>
+     <li>use the + - buttons</li>
+    </ul>
+	</li>
+</ul>
+
+<h3>Editing Unit Attributes</h3>
+
+	
+<h3>Editing Initial Unit Position, Orientation and Formation</h3>
+
+<p>Select a unit by clicking on it in the Scenario Tree or on the map. Holding <b>Ctrl</b> allows you to select more than one unit.</p>
+
+<p>Placing and orienting units
+<ul>
+    <li>Place units by:
+    <ul>
+     <li>dragging from TreeV or Map</li>
+     <li>Pressing and holding the<b><font color="#3300CC">2</font></b> key and moving the mouse</li>
+     <li>Pressing and holding <b>shift</b> during this operation will move child units as well</li>
+    </ul>
+    </li>
+    <li>Rotate units around their own centers by:
+    <ul>
+     <li>Pressing and holding the <b><font color="#3300CC">3</font></b> key and moving the mouse</li>
+     <li>Pressing and holding <b>shift</b> during this operation will rotate child units as well</li>
+    </ul>
+    </li>
+    <li>Aim units at a point by:
+    <ul>
+     <li>Pressing and holding the <b><font color="#3300CC">4</font></b> key and and moving the mouse to the location you want them to look at</li>
+     <li>Pressing and holding <b>shift</b> during this operation will aim child units as well</li>
+    </ul>
+    </li>
+
+    <li>Place units into formation by:
+    <ul>
+     <li>Selecting parent unit and pressing the <b><font color="#3300CC">F</font></b> key</li>
+     <li>Changing the parent unit's formation in the Scenario Spreadsheet</li>
+    </ul>
+    </li>
+
+</ul>
+</p>
+<p>Additional Map Operations
+<ul>
+    <li>Measure a distance by:
+    <ul>
+     <li>Pressing and holding the <b><font color="#3300CC">5</font></b> key at the location you wish to measure from</li>
+     <li>while still holding <b><font color="#3300CC">5</font></b>, move the mouse to where you wish to measure to</li>
+    </ul>
+    </li>
+</ul>
+
+<h3>Setting Scenario Parameters</h3>
+<ul>
+    <li>Assign Player role for Single Player scenario
+    <ul>
+     <li>Select the unit in the map or the scenario tree</li>
+     <li>Drag the unit to the Cmndr field</li>
+     <li>-or- In the Scenario menu of the map, choose "Assign Selected as Player"</li>
+     <li>note the Cmndr field updating</li>
+     <li>note if the field is unassigned, the top ranking unit on the French side will be the player.</li>
+    </ul>
+    </li>
+    <li>Set Scenario Start time
+    <ul>
+     <li>Enter time in 24 hr units in the Time field</li>
+    </ul>
+    </li>
+</ul>
+
+<h2>Creating and Editing Scenario BattleScript</h2>
+<p> This is surely the most complex part of scenario creation. Take your time, start simple and feel free to open the scenarios in the SDK to see examples. Also be sure the read the general SDK documentation, as it has a full details on events and commands, as well as examples that apply to the scenario editor.</p>
+<p> To understand Battlescripts, you must understand two concepts - the "Event" (occasinally called a trigger) and a "Command." Each line i n the battlescript represents and event that the game is waiting for. When that event occurs, it usally calls a command, which is also on the same line.</p>
+<p>The most commonly used event is the Time Event (timeevt.) THis shows up in the battlescript as a time-of-day in the left-most column. When this time is reached in-game. The event is called. Other events may be triggered by game start, objective capture, officer death, etc.</p>
+<p>A common command is the moveto command. When this command is called by an event, it commands the named unit to move to a particular location on the map, represented by x,y cartesian coordinates</p>
+
+<h3>Battlescript UI</h3>
+<p>Adding and Removing Events</p>
+<ul>
+    <li> use the + button to create a new event, or right click on the clock icon to create a new one after the one you clicked on, duplicate an existing one, or create an evtcont for it.
+
+	<ul>Then click on the command field to assign a command. You cannot assign a unit unless an event has a command</ul>
+	
+
+<ul>Drag and drop works for most fields</ul> 
+
+<ul>Drag a unit from the TreeView or the map to the Unit field give the command a unit if it needs it. Likewise with the "from" field (rarely used)</ul>
+
+<ul>Events and commands that require a location in 'args' have a '>' button can dragged to the map to assign that location. </ul>
+</ul>
+</ul>
+
+
+<h3>Events require particular considerations</h3>
+
+<p>There are a few missing commands that still need to be authored by hand editing the battlescript.csv. loadlayout it the most prominent of these. All unsupported event and commands will pass through the editor unharmed.</p>
+
+
+
+<h2>Other Notes</h2>
+<ul>
+<li> All scenarios are saved in your Documents\SowWL\Scenarios folder. It is not possible to save scenarios or orders of battle directly into the Scourge of War game directory.</li>
+</ul>
+
+
+</body>
+</html>

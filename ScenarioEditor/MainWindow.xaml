@@ -1,0 +1,1604 @@
+﻿<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:SOW="clr-namespace:NorbSoftDev.SOW;assembly=NorbSoftDev.SOW" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:dat="clr-namespace:System.Windows.Data;assembly=PresentationFramework"
+    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:ScenarioEditor" x:Name="SOWScenarioEditor"
+    
+    mc:Ignorable="d" x:Class="ScenarioEditor.SOWScenarioEditorWindow"
+    Title="SowScenarioEditor" Height="800" Width="1000" Loaded="Window_Loaded"
+    
+    Closing="Window_Closing"
+    >
+    <Window.Resources>
+        <!-- Resource Dictionaries-->
+        <ObjectDataProvider x:Key="mapModes"
+                    MethodName="GetValues" 
+                    ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:MapMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="EObjectiveType"
+                    MethodName="GetValues" 
+                    ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="SOW:EObjectiveType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="EObjectivePriority"
+                    MethodName="GetValues" 
+                    ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="SOW:EObjectivePriority" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="EObjectiveAI"
+                    MethodName="GetValues" 
+                    ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="SOW:EObjectiveAI" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <!--Wrapping Collections-->
+        <SOW:EventCollection x:Key="EventCollection" />
+
+        <CollectionViewSource x:Key="cvsEventCollection" Source="{Binding battleScript.events}" 
+                          Filter="edg_CollectionViewSource_Filter">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="block"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
+
+        <ContextMenu x:Key="edgContextMenu">
+            <MenuItem Header="{Binding trigger}"/>
+            <MenuItem Header="Duplicate Before" Click="edg_DuplicateBeforeClick"  CommandParameter="{Binding}"/>
+            <MenuItem Header="Duplicate After" Click="edg_DuplicateAfterClick"  CommandParameter="{Binding}"/>
+            <MenuItem Header="Create After" Click="edg_CreateAfterClick"  CommandParameter="{Binding}"/>
+        </ContextMenu>
+
+        <!-- Converters -->
+        <local:RankToBrushConverter x:Key="RankToBrushConverter"/>
+        <local:IdToBrushConverter x:Key="IdToBrushConverter"/>
+        <local:CommandArgToBrushConverter x:Key="CommandArgToBrushConverter"/>
+        <local:EventToImageConverter x:Key="EventToImageConverter"/>
+        <local:ObjectToTypeConverter x:Key="ObjectToTypeConverter" />
+        <local:IHasCommandToBoolConverter x:Key="IHasCommandToBoolConverter"/>
+        <!-- Styles -->
+        <Style x:Key="DataGridRowStyle1" TargetType="{x:Type DataGridRow}">
+            <!--<Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Yellow"/>
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="BorderBrush" Value="Red"/>
+                </Trigger>
+            </Style.Triggers>-->
+        </Style>
+
+        <Style x:Key="styleReadOnly" TargetType="{x:Type DataGridCell}">
+            <Setter Property="Control.Background" Value="DarkGray"></Setter>
+            <Setter Property="Control.Height" Value="20"></Setter>
+        </Style>
+
+        <Style x:Key="styleId" TargetType="{x:Type DataGridCell}">
+            <Setter Property="Control.Background" Value="LightBlue"></Setter>
+            <Setter Property="Control.Height" Value="20"></Setter>
+            <!--<Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Yellow"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="BorderBrush" Value="Blue"/>
+                </Trigger>
+            </Style.Triggers>-->
+        </Style>
+
+        <Style x:Key="styleBsCell" TargetType="{x:Type DataGridCell}">
+            <Setter Property="Control.Background" Value="DarkGray"></Setter>
+            <Setter Property="Control.Height" Value="20"></Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="BorderBrush" Value="Yellow"/>
+                    <Setter Property="Background" Value="White"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="styleUnitCell" TargetType="{x:Type DataGridCell}">
+            <Setter Property="Control.Background" Value="White"></Setter>
+            <Setter Property="Control.Height" Value="20"></Setter>
+            <!--<Setter Property="IsSelected" Value="{Binding IsSelected}"/>-->
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="BorderBrush" Value="Blue"/>
+                    <Setter Property="Background" Value="AntiqueWhite"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="styleEchelonRankShaded" TargetType="{x:Type TextBlock}">
+            <Setter Property="Background" Value="{Binding echelon, Converter={StaticResource RankToBrushConverter}}"/>
+        </Style>
+
+        <Style x:Key="styleUnitRankShaded" TargetType="{x:Type TextBlock}">
+            <Setter Property="Background" Value="{Binding unit, Converter={StaticResource RankToBrushConverter}}"/>
+        </Style>
+
+        <Style x:Key="styleUnitRankShadedButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{Binding unit, Converter={StaticResource RankToBrushConverter}}"/>
+        </Style>
+
+
+        <Style x:Key="styleIdShaded" TargetType="{x:Type TextBlock}">
+            <Setter Property="Background" Value="{Binding id, Converter={StaticResource IdToBrushConverter}}"/>
+        </Style>
+
+        <Style x:Key="styleLocationShaded" TargetType="{x:Type TextBlock}">
+            <Setter Property="Background" Value="{Binding location, Converter={StaticResource CommandArgToBrushConverter}}"/>
+        </Style>
+
+        <Style x:Key="styleShowNull" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                    <Setter Property="IsEnabled" Value="False" />
+                    <Setter Property="Background" Value="Red"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+
+        <Style x:Key="styleOnlyEnabledWhenLoaded" TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}" Value="{x:Null}">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="styleNameField" TargetType="TextBox">
+            <Setter Property="Control.MinWidth" Value="80"/>
+            <Setter Property="Control.Height" Value="20"/>
+            <Setter Property="Control.Background" Value="LightBlue"/>
+        </Style>
+
+        <TransformGroup x:Key="Rotate">
+            <RotateTransform Angle="90" />
+        </TransformGroup>
+
+        <!-- Targeted Styles -->
+        <Style TargetType="TreeViewItem">
+            <Setter Property="IsExpanded" Value="True"/>
+        </Style>
+
+        <!--  DataTemplates -->
+        <HierarchicalDataTemplate x:Key="EchelonTemplate" ItemsSource="{Binding children}">
+            <!--<StackPanel Orientation="Vertical">
+            <TextBlock Text="{Binding niceName}"></TextBlock>
+            <TextBlock Text="{Binding id}"></TextBlock>
+            </StackPanel>-->
+            <StackPanel Orientation="Horizontal">
+                <!--<Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="240"/>
+                </Grid.ColumnDefinitions>-->
+                <TextBlock Grid.Column="3" Text="{Binding symbol}" HorizontalAlignment="Right"/>
+                <TextBlock Grid.Column="5" Text="{Binding niceName}" HorizontalAlignment="Left" Margin="5,1,5,1" MinWidth="200"/>
+                <TextBlock Grid.Column="0"  Foreground="DarkGreen"  Text="{Binding nInfantry}" HorizontalAlignment="Right" TextAlignment="Right" Margin="5,1,5,1"/>
+                <TextBlock Grid.Column="1"  Foreground="Yellow" Text="{Binding nCavalry}" HorizontalAlignment="Right"  TextAlignment="Right" Margin="5,1,5,1" />
+                <TextBlock Grid.Column="2"  Foreground="SaddleBrown"  Text="{Binding nArtillery}" HorizontalAlignment="Right"  TextAlignment="Right" Margin="5,1,5,1" />
+            </StackPanel>
+            <!--</Grid>-->
+        </HierarchicalDataTemplate>
+
+
+        <!-- Dialog Creating Cells-->
+        <DataTemplate x:Key="FormationTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <Button Name="FormationButton" Content="{Binding formation.id}" Click="HasFormationButtonClick"/>
+
+                <!--<Button Name="FormationButton" Click="HasFormationButtonClick">
+                        ::
+                    </Button>
+                    <TextBox Text="{Binding formation.id}" IsReadOnly="True"/>-->
+
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Event DataTemplates -->
+
+        <local:EventDataTemplateSelector x:Key="eventDataTemplateSelector"/>
+
+
+
+        <DataTemplate x:Key="unitEventTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" ContextMenu="{StaticResource edgContextMenu}">
+                <Button Content="{Binding trigger}" Click="edg_TriggerButtonClick"/>
+                <!--<TextBox Text="{Binding trigger}" Grid.Column="1" Height="20" Margin="2"></TextBox>-->
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="unitLocationEventTemplate">
+            <StackPanel Background="Magenta" Orientation="Horizontal" HorizontalAlignment="Stretch" ContextMenu="{StaticResource edgContextMenu}">
+                <Button Content="{Binding trigger}" Click="edg_TriggerButtonClick"/>
+                <TextBlock Text="{Binding position.south, StringFormat={}{0:F0}}" VerticalAlignment="Stretch" ></TextBlock>
+                <TextBlock Text=","  VerticalAlignment="Stretch" ></TextBlock>
+                <TextBlock Text="{Binding position.east, StringFormat={}{0:F0}}"  VerticalAlignment="Stretch" ></TextBlock>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="timeEventTemplate">
+            <Button Content="{Binding trigger}" VerticalAlignment="Stretch" Click="edg_SetTriggerClick"></Button>
+        </DataTemplate>
+
+        <DataTemplate x:Key="scenarioObjectiveEventTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" ContextMenu="{StaticResource edgContextMenu}">
+                <!--<Button Content="{Binding trigger}" Click="edg_RandomEventTriggerButtonClick"/>-->
+                <TextBlock Text="{Binding trigger, Mode=OneWay}" MinWidth="20"/>
+                <TextBlock Text="{Binding scenarioObjective, Mode=OneWay}" MinWidth="20"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="randomEventTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" ContextMenu="{StaticResource edgContextMenu}">
+                <!--<Button Content="::" Click="edg_RandomEventTriggerButtonClick"/>-->
+                <Button Content="{Binding trigger}" MinWidth="30" Click="edg_RandomEventTriggerButtonClick"/>
+                <!--<TextBox Text="{Binding}" IsReadOnly="True" Grid.Column="1" Height="20" Margin="2"></TextBox>-->
+                <TextBlock Text="{Binding tag, Mode=OneWay}"  Grid.Column="1"  VerticalAlignment="Stretch" ></TextBlock>
+            </StackPanel>
+        </DataTemplate>
+        <!-- Command DataTemplates -->
+
+        <local:CommandDataTemplateSelector x:Key="commandDataTemplateSelector"/>
+
+        <DataTemplate x:Key="commandTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+            </StackPanel>
+        </DataTemplate>
+
+        <!--<DataTemplate x:Key="unitFromUnitCommandTemplate">
+            <StackPanel Background="Pink" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Button Click="edg_MoveSpecClick" Content="{Binding moveSpec}" MouseMove="edg_MouseMove"/>
+                <Label VerticalAlignment="Center" FontSize="8" Content="{Binding moveSpec}"/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding relativeUnit}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="unitMoveSpecMyCommandTemplate">
+            <StackPanel Background="Plum" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Button Click="edg_MoveSpecClick" Content="{Binding moveSpec}" MouseMove="edg_MouseMove"/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding fromUnit}"/>
+            </StackPanel>
+        </DataTemplate>-->
+
+        <DataTemplate x:Key="unitArgUnitCommandTemplate">
+            <StackPanel Background="Pink" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <!--<Button Click="edg_MoveSpecClick" Content="{Binding moveSpec}" MouseMove="edg_MouseMove"/>-->
+                <!--<Label VerticalAlignment="Center" FontSize="8" Content="{Binding moveSpec}"/>-->
+                <TextBlock VerticalAlignment="Center" Text="{Binding other}" AllowDrop="True" Drop="edg_CommandDrop"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="unitFromUnitCommandTemplate">
+            <StackPanel Background="Pink" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <!--<Button Click="edg_MoveSpecClick" Content="{Binding moveSpec}" MouseMove="edg_MouseMove"/>-->
+                <!--<Label VerticalAlignment="Center" FontSize="8" Content="{Binding moveSpec}"/>-->
+                <TextBlock VerticalAlignment="Center" Text="{Binding other}" AllowDrop="True" Drop="edg_CommandDrop"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="unitArgDistanceCommandTemplate">
+            <StackPanel Background="Maroon" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <!--<Button Click="edg_MoveSpecClick" Content="{Binding moveSpec}" MouseMove="edg_MouseMove"/>-->
+                <TextBox VerticalAlignment="Center" Text="{Binding distance}" MouseMove="edg_ValueMouseMove"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!--<DataTemplate x:Key="unitMoveSpecPositionCommandTemplate">
+            <StackPanel Background="Orange" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                -->
+        <!--<Button Click="edg_MoveSpecClick" Content="{Binding moveSpec}" MouseMove="edg_MouseMove"/>-->
+        <!--
+                <Button Click="map_GoToPositionClick" Content=">" MouseMove="edg_MouseMove"/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding position.south, StringFormat={}{0:F0}}"/>
+                <TextBlock VerticalAlignment="Center" Text=","/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding position.east, StringFormat={}{0:F0}}"/>
+            </StackPanel>
+        </DataTemplate>-->
+
+        <DataTemplate x:Key="unitArgMapObjectiveCommandTemplate">
+            <StackPanel Background="Orange" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <!--<Button Click="edg_MoveSpecClick" Content="{Binding moveSpec}" MouseMove="edg_MouseMove"/>-->
+                <Button Click="map_GoToObjectiveClick" Content=">" MouseMove="edg_MouseMove"/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding mapObjective.id}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="unitPositionCommandTemplate">
+            <StackPanel Background="Orange" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Button Click="map_GoToPositionClick" Content=">" MouseMove="edg_MouseMove"/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding position.south, StringFormat={}{0:F0}}"/>
+                <TextBlock VerticalAlignment="Center" Text=","/>
+                <TextBlock VerticalAlignment="Center" Text="{Binding position.east, StringFormat={}{0:F0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="unitFormTypeCommandTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <Button Content="{Binding formType}" MinWidth="30"  Name="FormTypeButton" Click="edg_FormTypeArgButtonClick"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="unitFormationCommandTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <Button Content="{Binding formation.id}" MinWidth="30"  Name="FormationButton" Click="HasFormationButtonClick"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="randomEventCommandTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <Button Content="{Binding tag}" Click="edg_RandomEventCommandButtonClick"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="courierCommandTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <TextBlock Background="BurlyWood" VerticalAlignment="Center" MinWidth="50" Text="{Binding recipient}" AllowDrop="True" Drop="edg_CommandDrop"/>
+                <TextBlock Background="OliveDrab" VerticalAlignment="Center" MinWidth="50" Margin="5,0,0,0" Text="{Binding screenMessage.id}" AllowDrop="True" Drop="edg_CommandDrop"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="scenarioObjectiveCommandTemplate">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <TextBlock Text="{Binding scenarioObjective.name}" AllowDrop="True" Drop="edg_CommandDrop"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Commands -->
+        <local:PrintISOWFileCommand x:Key="PrintISowFile"/>
+        <!--<local:SaveISOWFileCommand x:Key="SaveISowFile"/>-->
+        <local:DeleteScenarioEchelonCommand x:Key="DeleteScenarioEchelon"/>
+        <!--<local:SelectScenarioEchelonCommand x:Key="SelectScenarioEchelon"/>-->
+        <local:AddChilOOBEchelonCommand x:Key="AddChilOOBEchelon"/>
+        <local:DeleteOOBEchelonCommand x:Key="DeleteOOBEchelon"/>
+        <local:RandomizePositionsCommand x:Key="RandomizePositions"/>
+
+        <local:UndoCommand x:Key="Undo"/>
+        <local:RedoCommand x:Key="Redo"/>
+
+        <DataTemplate x:Key="sRankTemplate">
+            <TextBlock Text="{Binding echelon.symbol, Mode = OneWay}" Style="{StaticResource styleEchelonRankShaded}"
+                                           FontFamily="Courier New" HorizontalAlignment="Right" TextAlignment="Right"/>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="Z" Modifiers="Control"
+              CommandParameter="{Binding ScenarioUndoStack, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+              Command="{StaticResource Undo}" />
+        <KeyBinding Key="Y" Modifiers="Control"
+              CommandParameter="{Binding ScenarioUndoStack, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+              Command="{StaticResource Redo}" />
+    </Window.InputBindings>
+
+
+    <!-- Main Grid -->
+    <Grid Background="SlateGray">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="60" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="24" />
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="5*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Map and Scenario Table -->
+        <!-- Map First so It gets drawn under everythong else if clipping breaks-->
+
+        <!-- Use a hidden scroll viewer to prevent clipping-->
+        <!--<ScrollViewer 
+            Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1"
+            VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" 
+            MinHeight="100" >
+            <local:MapPanel x:Name="mapPanel"/>
+            </ScrollViewer>-->
+
+        <!--<local:MapPanel x:Name="mapPanel"
+                       Clip=""  ClipToBounds="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" MinHeight="100" />-->
+
+        <Grid Grid.Column="3" Grid.ColumnSpan="1" Grid.Row="2" MinHeight="100">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="20" />
+
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="210*" />
+                <ColumnDefinition Width="9*"/>
+                <ColumnDefinition Width="503*"/>
+                <ColumnDefinition Width="20" />
+
+            </Grid.ColumnDefinitions>
+            <!-- Put Map Panel inside canvas to prevent clipping-->
+            <Canvas Grid.Column="0" Grid.Row="0" MinHeight="100" Focusable="True" FocusManager.IsFocusScope="True" Grid.ColumnSpan="3" Background="DarkOliveGreen">
+                <local:MapPanel x:Name="mapPanel" AllowDrop="True" Focusable="True"/>
+            </Canvas>
+
+
+            <!--<local:MapPanel x:Name="mapPanel" AllowDrop="True" Grid.Column="0" Grid.Row="0" MinHeight="100"/>-->
+
+            <!--Window="{Binding Path=globalSelectedItem, RelativeSource={RelativeSource Mode=FindAncestor,  AncestorType=Window}}"-->
+
+
+            <!--<ScrollBar Orientation="Horizontal"  Grid.Column="0" Grid.Row="1"  Width="Auto"
+                       SmallChange=".1" ValueChanged="map_XSliderChanged"/>-->
+            <!--<ScrollBar Orientation="Vertical" Grid.Column="1" Grid.Row="0" Height="Auto"
+                       SmallChange=".1" ValueChanged="map_YSliderChanged"/>-->
+
+            <ScrollBar Orientation="Horizontal"  Grid.Column="0" Grid.Row="1"  Width="Auto"
+                       SmallChange=".1"  Value="{Binding Path=XPercent,ElementName=mapPanel}" Grid.ColumnSpan="3" Margin="0,2,0,1"/>
+
+            <ScrollBar Orientation="Vertical" Grid.Column="3" Grid.Row="0" Height="Auto"
+                       SmallChange=".1"  Value="{Binding Path=YPercent, ElementName=mapPanel}" Margin="2,0,1,0"/>
+
+
+        </Grid>
+
+        <Menu  Grid.Row="0" Grid.ColumnSpan="2" IsMainMenu="True">
+            <MenuItem Header="_File" >
+                <MenuItem Header="New Scenario..."  Click="newScenarioClick"/>
+
+                <MenuItem Header="Load Scenario">
+                    <MenuItem Header="Recent Scenarios" Name="RecentScenariosMenu">
+                        <MenuItem Header="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=recentlyOpenedScenario0}" Click="loadRecentlyOpenedScenario0Click"/>
+                        <MenuItem Header="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=recentlyOpenedScenario1}" Click="loadRecentlyOpenedScenario1Click"/>
+                        <MenuItem Header="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=recentlyOpenedScenario2}" Click="loadRecentlyOpenedScenario2Click"/>
+                    </MenuItem>
+                    <MenuItem Header="Load Scenario from Mod" Name="scenario_ModsMenu"/>
+                    <MenuItem Header="Browse for Scenario..."  Click="loadScenarioClick"/>
+                </MenuItem>
+                <MenuItem Header="{Binding mod}" HeaderStringFormat="Save Scenario in Mod {0}" Command="{Binding SaveScenarioCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
+
+                <!--<MenuItem Header="Save Scenario" Command="{Binding SaveScenarioCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>-->
+                <MenuItem Header="Save As User Scenario..." Command="{Binding SaveUserScenarioCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
+                <MenuItem Header="Export Scenario as Order of Battle" Command="{Binding ExportOrderOfBattleCommand,
+                          RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
+                <Separator />
+                <MenuItem Header="Load Order of Battle">
+                    <MenuItem Header="Load Recent Orders of Battle" Name="RecentOOBsMenu">
+                        <MenuItem Header="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=recentlyOpenedOOB}" Click="loadLastOOBClick"/>
+                    </MenuItem>
+                    <MenuItem Header="Load Order of Battle from Mod" Name="oob_ModsMenu"/>
+                    <MenuItem Header="Browse for Order of Battle..."  Click="loadOrderOfBattleClick"/>
+                    <MenuItem Header="Set Default Map" Name="map_ModsMenu"/>
+                </MenuItem>
+
+                <MenuItem Header="{Binding orderOfBattle.mod}" HeaderStringFormat="Save Order of Battle in Mod {0}" Command="{Binding SaveOrderOfBattleCommand,
+                          RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
+
+                <!--<MenuItem Header="Save Order of Battle" Command="{Binding SaveOrderOfBattleCommand,
+                          RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>-->
+
+                <Separator />
+                <MenuItem Header="Activate Mods..." Name="file_ModsMenu"/>
+                <MenuItem Header="Sync Mod Activation from Game" Click="modsSyncClick"/>
+
+            </MenuItem>
+
+            <MenuItem Header="_Edit">
+                <MenuItem Header="Undo"  
+                    CommandParameter="{Binding ScenarioUndoStack, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                    Command="{StaticResource Undo}" />
+                <MenuItem Header="Redo"  
+                    CommandParameter="{Binding ScenarioUndoStack, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                    Command="{StaticResource Redo}" />                
+            </MenuItem>
+
+            <MenuItem Header="_Options">
+                <MenuItem Header="Turn Off Undo" Click="undo_Off"/>
+                <MenuItem Header="Turn On Undo" Click="undo_On"/>
+                <Separator />
+                <MenuItem Header="Save In Documents Folder Only" IsCheckable="True" IsChecked="{Binding saveInDocumentsOnly, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" ToolTip="Setting this to false will allow saving scenarios in any folder"/>
+            </MenuItem>
+
+            <MenuItem Header="_Debug">
+                <MenuItem Header="Print Undo Stack" Click="PrintUndoStack"></MenuItem>
+                <MenuItem Header="Print Scenario CoC" Click="PrettyPrintScenario"></MenuItem>
+
+                <MenuItem Header="populateEchelonsFromOrderOfBattleClick"  Click="populateEchelonsFromOrderOfBattleClick"/>
+
+
+                <MenuItem Header="Print Scenario Csv" Click="PrintScenarioCsv"></MenuItem>
+                <MenuItem Header="Force Exception" Click="ForceException"></MenuItem>
+                <MenuItem Header="Dump Csv Headers to SOWWL Dir" Click="DumpHeaders"></MenuItem>
+            </MenuItem>
+            <!--<MenuItem Header="_View" />
+            <MenuItem Header="_Window" />-->
+            <!--<MenuItem Header="_Help">
+                <WebBrowser Height="200" Name="helpWebBrowser"></WebBrowser>
+            </MenuItem--> >
+
+        </Menu>
+        <Menu Grid.Column="2" HorizontalAlignment="Stretch">
+            <Grid>
+                <ProgressBar Name="progressBar"  HorizontalAlignment="Stretch" IsIndeterminate="False" Height="20"/>
+                <TextBlock  Name="progressBarTextBlock" Text="Starting" Width="400"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="9,1,9,3" />
+            </Grid>
+            <MenuItem Header="_Help" Click="ShowHelp" Width="40" HorizontalAlignment="Right" FlowDirection="RightToLeft"/>
+        </Menu>
+        <!--- ItemsSource="{Binding Source={StaticResource cvsScenario}}" GROUPING IS REALLY SLOW!-->
+        <TabControl Grid.Column="2"  Grid.Row="3">
+
+            <TabItem>
+                <TabItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="Units"/>
+                        <!--<TextBlock Grid.Column="1" Text="{Binding Count, StringFormat=[{0}]}" />-->
+                        <Button Grid.Column="2" FontSize="8" Content="Hide" Height="20" Click="mapPanel_HideAllUnitsClick"/>
+                        <Button Grid.Column="3" FontSize="8" Content="Show" Height="20" Click="mapPanel_ShowAllUnitsClick"/>
+                        <Button Grid.Column="4" FontSize="8" Background="Blue" Content="Hide" Height="20" Click="mapPanel_HideAllBlueUnitsClick"/>
+                        <Button Grid.Column="5" FontSize="8" Background="Blue" Content="Show" Height="20" Click="mapPanel_ShowAllBlueUnitsClick"/>
+                        <Button Grid.Column="6" FontSize="8" Background="Red" Content="Hide" Height="20" Click="mapPanel_HideAllRedUnitsClick"/>
+                        <Button Grid.Column="7" FontSize="8" Background="Red" Content="Show" Height="20" Click="mapPanel_ShowAllRedUnitsClick"/>
+                        <Button Grid.Column="8" FontSize="8" Background="Green" Content="Hide" Height="20" Click="mapPanel_HideAllGreenUnitsClick"/>
+                        <Button Grid.Column="9" FontSize="8" Background="Green" Content="Show" Height="20" Click="mapPanel_ShowAllGreenUnitsClick"/>
+                    </Grid>
+                </TabItem.Header>
+                <DataGrid x:Name="scenarioDataGrid" MinHeight="100" Background="SlateGray"
+                          
+          
+                  ItemsSource="{Binding}"
+                  SelectedValuePath="id"
+                  FrozenColumnCount="3"  AutoGenerateColumns="False"
+                  SelectionMode="Extended"
+                  SelectionUnit="CellOrRowHeader"
+                  PreviewKeyDown="sdg_PreviewKeyDown"
+                  CellEditEnding="dataGrid_CellEditEnding"
+                  MouseMove="sdg_MouseMove"
+                  MouseDown="sdg_MouseDown"
+                  AllowDrop="True"
+                  DragOver="sdg_DragOver"
+                  Drop="sdg_Drop"
+                          
+                  DataGrid.CellStyle ="{StaticResource  styleUnitCell}" Margin="0,2,0.2,-1.6" >
+
+                    <!--<DataGrid.RowHeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                                      AncestorType={x:Type DataGridRow}}, 
+                                      Path=Item.echelon.rank.symbol}"/>
+                            
+                            -->
+                    <!--<TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                                      AncestorType={x:Type DataGridRow}}, 
+                                      Path=Item.name1}"/>-->
+
+                    <!--<Button Name="PositionButton" Click="PositionButtonClick"  Content=">" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                                      AncestorType={x:Type DataGridRow}} 
+                                      ,Path=Item}"/>-->
+                    <!--
+
+                        </DataTemplate>
+                    </DataGrid.RowHeaderTemplate>-->
+
+                    <DataGrid.Resources>
+                        <!--<DataTemplate x:Key="sRankTemplate">
+                            <TextBlock Text="{Binding echelon.symbol, Mode = OneWay}" Style="{StaticResource styleEchelonRankShaded}"
+                                           FontFamily="Courier New" HorizontalAlignment="Right" TextAlignment="Right"/>
+                        </DataTemplate>-->
+
+                        <DataTemplate x:Key="sFormationTemplate">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <Button Name="FormationButton" Click="sdg_FormationButtonClick" CommandParameter="{Binding}">
+                                    ::
+                                </Button>
+                                <TextBox Text="{Binding formation.id}" IsReadOnly="True"/>
+                            </StackPanel>
+                        </DataTemplate>
+
+                        <!--Only show flag icon-->
+                        <DataTemplate x:Key="sFlagTemplate">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <!--<Button Name="FlagButton" Click="sdg_FlagButtonClick" Content="::"/>-->
+                                <Image />
+                                <TextBox Text="{Binding flag, Mode=OneWay }" IsReadOnly="True" />
+                            </StackPanel>
+                        </DataTemplate>
+
+                        <DataTemplate x:Key="IHasTransformPositionButtonCellTemplate">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="PositionButton" Click="PositionButtonClick"  Content=">" CommandParameter="{Binding transform}"/>
+                                <TextBlock Text="{Binding transform.south}"/>
+                                <TextBlock Text=" , "/>
+                                <TextBlock Text="{Binding transform.east}"/>
+                            </StackPanel>
+                        </DataTemplate>
+
+                        <DataTemplate x:Key="sdgShortcutCellTemplate">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="PositionButton" Click="PositionButtonClick" MinWidth="15" Content=">" CommandParameter="{Binding transform}"/>
+                                <Button Name="SelectButton" Click="SelectButtonClick"  MinWidth="15" Content="||"  CommandParameter="{Binding scenarioEchelon}"/>
+                            </StackPanel>
+                        </DataTemplate>
+
+                    </DataGrid.Resources>
+
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header=" " CellTemplate="{StaticResource sdgShortcutCellTemplate}"/>
+
+                        <DataGridTemplateColumn Header="Rank" SortMemberPath="echelon.id" IsReadOnly="True"  CellTemplate="{StaticResource sRankTemplate}"/>
+
+                        <!--<DataGridTextColumn Header="Rank" Binding="{Binding echelon.rank}" SortMemberPath="echelon.id" IsReadOnly="True" DataGridTextColumn.ElementStyle="{StaticResource styleEchelonRankShaded}">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Setter Property="ContextMenu">
+                                        <Setter.Value>
+                                            <ContextMenu>
+                                                <MenuItem Header="{Binding name1}"/>
+                                                <MenuItem Header="Remove This and All Children" Command="{StaticResource DeleteScenarioEchelon}" CommandParameter="{Binding}"/>
+                                            </ContextMenu>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>-->
+                        <!--</DataGridTextColumn>-->
+
+                        <DataGridTextColumn Header ="Name 1" Binding="{Binding name1}"  IsReadOnly="True" CellStyle="{StaticResource styleReadOnly}"/>
+                        <DataGridTemplateColumn Header="Formation" CellTemplate="{StaticResource sFormationTemplate}"/>
+                        <DataGridTextColumn Header="HeadCount" Binding="{Binding headCount}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Ammo" Binding="{Binding ammo}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Unit Class" Binding="{Binding unitClass}" IsReadOnly="True" CellStyle="{StaticResource styleReadOnly}"/>
+                        <DataGridTemplateColumn Header="Position" CellTemplate="{StaticResource IHasTransformPositionButtonCellTemplate}"/>
+                        <!--<DataGridTemplateColumn Header="Flag" CellTemplate="{StaticResource sFlagTemplate}"/>-->
+
+                        <DataGridTextColumn Header="Facing" Binding="{Binding transform.facing}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Id" Binding="{Binding id}" IsReadOnly="True" CellStyle="{StaticResource styleId}"/>
+                        <!--<DataGridTextColumn Header="S" Binding="{Binding transform.south}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="E" Binding="{Binding transform.east}"></DataGridTextColumn>-->
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <!--<TabItem Header="BattleScript">
+                <ListBox x:Name="battlescriptList" ItemsSource="{Binding battleScript.events}"
+                ItemTemplateSelector="{StaticResource eventDataTemplateSelector}"
+
+                />
+            </TabItem>-->
+
+
+            <TabItem>
+                <TabItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="BattleScript"/>
+                        <!--<TextBlock Grid.Column="1" Text="{Binding Count, StringFormat=[{0}]}" />-->
+                        <Button Grid.Column="2" FontSize="8" Content="Hide" Height="20" Click="mapPanel_HideAllCommandsClick"/>
+                        <Button Grid.Column="3" FontSize="8" Content="Show" Height="20" Click="mapPanel_ShowAllCommandsClick"/>
+                        <Button Grid.Column="4" FontSize="8" Content="Sort" Height="20" Click="edg_SortClick"/>
+                    </Grid>
+                </TabItem.Header>
+
+                <DataGrid x:Name="eventDataGrid" MinHeight="100" Background="SlateGray"
+                  ItemsSource="{Binding Source={StaticResource cvsEventCollection}}"
+                  FrozenColumnCount="6"
+                  AutoGenerateColumns="False"
+                  SelectedValuePath="trigger"
+                  SelectionMode="Extended"
+                  SelectionUnit="FullRow"
+                  MouseMove="edg_MouseMove"
+                  MouseDown="edg_MouseDown"
+                  AllowDrop="True"
+                  Drop="edg_Drop"
+                  CellEditEnding="dataGrid_CellEditEnding"
+                  CanUserAddRows="False"
+                  DataGrid.CellStyle ="{StaticResource  styleBsCell}">
+
+                    <DataGrid.Resources>
+                        <!--<ContextMenu x:Key="edgContextMenu">
+                            <MenuItem Header="{Binding trigger}"/>
+                            <MenuItem Header="Duplicate Before" Click="edg_DuplicateBeforeClick"  CommandParameter="{Binding}"/>
+                            <MenuItem Header="Duplicate After" Click="edg_DuplicateAfterClick"  CommandParameter="{Binding}"/>
+                            <MenuItem Header="Create After" Click="edg_CreateAfterClick"  CommandParameter="{Binding}"/>
+                        </ContextMenu>-->
+
+                        <DataTemplate x:Key="edgCommandTemplate">
+                            <Button Name="CommandButton" Content="{Binding command.name, Mode=OneWay}" 
+                                    IsEnabled="{Binding Converter={StaticResource IHasCommandToBoolConverter}}"
+                                    Click="edg_CommandButtonClick"/>
+                        </DataTemplate>
+                    </DataGrid.Resources>
+
+                    <DataGrid.GroupStyle>
+                        <!-- Style for groups at top level all using same trigger -->
+                        <GroupStyle>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="{x:Type GroupItem}">
+                                    <Setter Property="Margin" Value="0,0,0,5"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                <Expander IsExpanded="True" Background="#FF112255" BorderBrush="#FF002255" Foreground="#FFEEEEEE" BorderThickness="1,1,1,5">
+                                                    <Expander.Header>
+                                                        <DockPanel>
+                                                            <Button  Click="edg_GroupVisibiltyClick">
+                                                                <Image MinWidth="12" Source="images/eye.png"/>
+                                                            </Button>
+                                                            <!--<TextBlock FontWeight="Bold" Text="{Binding Path=Name}" Margin="5,0,0,0" Width="100"/>-->
+                                                            <Button FontWeight="Bold" Content="{Binding}" Margin="5,0,0,0" MinWidth="100" HorizontalAlignment="Stretch" Click="edg_SetTriggerClick"></Button>
+                                                            <!--<Button Content="{Binding Path=Name}" Click="edg_SetTriggerClick"></Button>-->
+                                                            <TextBlock FontWeight="Bold" Text="{Binding Path=ItemCount}"/>
+                                                        </DockPanel>
+                                                    </Expander.Header>
+                                                    <Expander.Content>
+                                                        <ItemsPresenter />
+                                                    </Expander.Content>
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                        </GroupStyle>
+                    </DataGrid.GroupStyle>
+
+                    <DataGrid.Columns>
+
+                        <DataGridTemplateColumn Header="Icon">
+                            <DataGridTemplateColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Grid.Row="0">
+                                        <Button Height="22" Width="Auto" Content="+" Click="edg_addBattleScriptEvent"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.HeaderTemplate>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image x:Name="icon" SnapsToDevicePixels="True" Stretch="None" Margin="0,0,3,0"
+                                           Source="{Binding Converter={StaticResource EventToImageConverter}}" MouseUp="edg_IconMouseDown">
+                                            <Image.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="{Binding trigger}"   CommandParameter="{Binding}"/>
+                                                    <Separator/>
+                                                    <MenuItem Header="Create Evtcont After" Click="edg_CreateEvtContClick"  CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="Duplicate Before" Click="edg_DuplicateBeforeClick"  CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="Duplicate After" Click="edg_DuplicateAfterClick"  CommandParameter="{Binding}"/>
+                                                    <MenuItem Header="Create After" Click="edg_CreateAfterClick"  CommandParameter="{Binding}"/>
+                                                    <Separator/>
+                                                    <MenuItem Header="Delete Event" Click="edg_DeleteClick"  CommandParameter="{Binding}"/>
+                                                </ContextMenu>
+                                            </Image.ContextMenu>
+                                        </Image>
+                                        <!--<Button  Click="edg_SetTriggerClick">
+                                            <Image MinWidth="12" Source="{Binding Converter={StaticResource EventToImageConverter}}"/>
+                                        </Button>-->
+                                        <Button  Click="edg_VisibiltyClick">
+                                            <Image MinWidth="12" Source="images/eye.png"/>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Event">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding}" 
+                                     ContentTemplateSelector="{StaticResource eventDataTemplateSelector}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Unit">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="{Binding unit}" VerticalContentAlignment="Top" Click="edg_UnitButtonClick" Style="{StaticResource styleUnitRankShadedButton}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Command" CellTemplate="{StaticResource edgCommandTemplate}"/>
+
+                        <!--<DataGridTextColumn Header="Objective" Binding="{Binding scenarioObjective}"/>-->
+
+                        <DataGridTemplateColumn Header="Args">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentControl Content="{Binding command}" 
+                                     ContentTemplateSelector="{StaticResource commandDataTemplateSelector}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn Header="From" Binding="{Binding command.fromUnit}"/>
+
+
+                        <DataGridTextColumn Header="Time Var" Binding="{Binding timeVar}"/>
+
+                        <!--<DataGridTextColumn Header="Rank" Binding="{Binding unit}" IsReadOnly="True" DataGridTextColumn.ElementStyle="{StaticResource styleUnitRankShaded}"/>-->
+
+                        <!--<DataGridTextColumn Header="Unit" Binding="{Binding unit.id, Mode=OneWay}" 
+                            DataGridTextColumn.ElementStyle="{StaticResource styleUnitRankShaded}"/>-->
+
+
+
+                        <!--<DataGridTextColumn Header ="Location" Binding="{Binding location}"/>-->
+
+
+                        <!--<DataGridTextColumn Header="Command" Binding="{Binding command}" IsReadOnly="True"/>-->
+
+                        <!--<DataGridComboBoxColumn Header="formation" Width="100" x:Name="eventFormationCombo"
+                        SelectedValueBinding="{Binding command.formation, Mode=TwoWay}"
+                        DisplayMemberPath="{Binding command.formation}"></DataGridComboBoxColumn>-->
+
+
+                        <DataGridTextColumn Header="Notes" Binding="{Binding description}"/>
+
+                        <DataGridTextColumn Header="Command Help" Binding="{Binding command.help}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Event Help" Binding="{Binding help}" IsReadOnly="True"/>
+
+                        <DataGridTextColumn Header="Event Type" Binding="{Binding Mode=OneWay, Converter={StaticResource ObjectToTypeConverter}}"/>
+                        <DataGridTextColumn Header="CommandType" Binding="{Binding command, Mode=OneWay, Converter={StaticResource ObjectToTypeConverter}}"/>
+
+                        <!--<DataGridTextColumn Header ="Command" Binding="{Binding command.name}" IsReadOnly="True"/>
+
+                        -->
+                        <!--<DataGridTextColumn Header ="Location" Binding="{Binding command.location}"  DataGridTextColumn.ElementStyle="{StaticResource styleShowNull}"/>-->
+                        <!--
+                        <DataGridTextColumn Header ="Location" Binding="{Binding command.location}"  DataGridTextColumn.ElementStyle="{StaticResource styleLocationShaded}">
+                        </DataGridTextColumn>
+                       
+                        <DataGridTextColumn Header ="Direction" Binding="{Binding command.direction}"/>
+                        <DataGridTextColumn Header ="Formation" Binding="{Binding command.formation}"/>
+                        <DataGridTextColumn Header ="Event" Binding="{Binding command.aevent}"/>
+                        <DataGridTextColumn Header ="Recipient" Binding="{Binding command.recipient.id}"/>
+                        <DataGridTextColumn Header ="Message" Binding="{Binding command.messsage.id}"/>
+                        <DataGridTextColumn Header ="Screen1" Binding="{Binding command.screen1}"/>
+                        <DataGridTextColumn Header ="Screen2" Binding="{Binding command.screen2}"/>
+                        <DataGridTextColumn Header ="Objective" Binding="{Binding command.objective}"/>-->
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <!--<TabItem Header="Screens">
+                <DataGrid x:Name="screensDataGrid" MinHeight="100" Background="MintCream"
+                  ItemsSource="{Binding screenMessages.Values}"
+                          AutoGenerateColumns="False"
+                   >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header ="Id" Binding="{Binding id, Mode=OneWay}"/>
+                        <DataGridTextColumn Header ="Contents" Binding="{Binding contents, Mode=OneWay}"/>
+                    </DataGrid.Columns>
+
+                </DataGrid>
+            </TabItem>-->
+    
+        </TabControl>
+        <DockPanel Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Stretch">
+
+            <!--<Menu  Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Background="SlateGray">-->
+            <Menu>
+                <MenuItem Header="_Scenario" >
+                    <!--<MenuItem Header="Assign Selected as Player"  Click="assignSelectedPlayerClick"/>-->
+                    <MenuItem Header="Set Mod ..."   Name="scenario_SetModMenu"/>
+                </MenuItem>
+                <MenuItem Header="_Import" >
+                    <MenuItem Header="_StartLocs.csv" >
+                        <MenuItem Header="Apply Directly to All Units ..."  Click="loadStartLocsDirectClick"/>
+                        <MenuItem Header="Apply Directly to Selected Units ..."  Click="loadStartLocsDirectSelectedClick"/>
+                    </MenuItem>
+
+                </MenuItem>
+                <MenuItem Header="Experimental" >
+                    <!--<MenuItem Header="Randomize All Units"  Command="{StaticResource RandomizePositions}" CommandParameter="{Binding}"/>-->
+                    <MenuItem Header="Randomize ..."  Click="randomizeScenarioClick"/>
+                    <MenuItem Header="_StartLocs.csv" >
+                        <MenuItem Header="Apply Modified to All Units ..."  Click="loadStartLocsClick"/>
+                        <MenuItem Header="Apply Modified to Selected Units ..."  Click="loadStartLocsSelectedClick"/>
+                    </MenuItem>
+                    <MenuItem Header="_GameDb" >
+                        <MenuItem Header="Apply Modified to All Units ..."  Click="loadGameDBClick"/>
+                        <MenuItem Header="Apply Modified to Selected Units ..."  Click="loadGameDBSelectedClick"/>
+                    </MenuItem>
+                </MenuItem>
+
+            </Menu>
+
+            <!--<Label>Require Click:</Label>
+            <CheckBox VerticalAlignment="Center"  IsChecked="{Binding Path=IsClicky,ElementName=mapPanel}" ></CheckBox>-->
+
+            <Label Content="Map:" VerticalAlignment="Center"   Width="Auto" Height="25"/>
+            <Label Content="{Binding map.name}" VerticalAlignment="Center"  MinWidth="50" Width="Auto" Height="25"/>
+            <Label Content="Zoom:"/>
+            <Button  x:Name="buttonZoomIn" VerticalAlignment="Center" Click="map_ZoomIn" Content="+" Height="20" MinWidth="20"
+                         />
+            <Button  x:Name="buttonZoomOut" VerticalAlignment="Center" Click="map_ZoomOut" Content="-" Height="20" MinWidth="20"
+                        />
+            <Button  x:Name="buttonZoomOff" VerticalAlignment="Center" Click="map_ZoomReset" Content="1x" Height="20" MinWidth="20"
+                        />
+            <!--<Button  x:Name="buttonClear" VerticalAlignment="Top" Click="map_ClearDrawings" Content="Clear" Height="20" MinWidth="20"
+                         Button.LayoutTransform="{StaticResource Rotate}"/>
+                <Button  x:Name="buttonUndo" VerticalAlignment="Top" Content="Undo" Height="20" MinWidth="20"
+                         Command="{StaticResource Undo}"
+                         CommandParameter="{Binding ScenarioUndoStack, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                         Button.LayoutTransform="{StaticResource Rotate}"/>
+                <Button  x:Name="buttonRedo" VerticalAlignment="Top" Content="Redo" Height="20" MinWidth="20"
+                         Command="{StaticResource Redo}"
+                         CommandParameter="{Binding ScenarioUndoStack, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                         Button.LayoutTransform="{StaticResource Rotate}"/>-->
+            <ComboBox Width="80" KeyboardNavigation.DirectionalNavigation="Cycle" BorderBrush = "Transparent"  Name="comboMapModes"
+                   ItemsSource="{Binding Source={StaticResource mapModes}}"
+                   SelectedValue="{Binding Path=mode,ElementName=mapPanel}"
+                   IsEditable="False" IsEnabled="False" Margin="5,5,5,5"   >
+                <!--IsEnabled="{Binding Path=IsClicky,ElementName=mapPanel}">-->
+            </ComboBox>
+            <TextBlock Name="SelectionInfo"  MinWidth="80" Text="{Binding Path=SelectionInfo,ElementName=mapPanel}" Margin="5,0,0,5"/>
+            <TextBlock  DockPanel.Dock="Left" Name="TerrainInfo"  MinWidth="80" Text="{Binding Path=CurrentTerrain,ElementName=mapPanel}" Margin="5,0,0,5"/>
+            <TextBlock  DockPanel.Dock="Right" Name="CurrentInfo"  MinWidth="80" Text="{Binding Path=CurrentInfo,ElementName=mapPanel}" Margin="5,0,0,5" />
+        </DockPanel>
+
+        <!--<StackPanel Margin="2" Orientation="Horizontal" Grid.Row="0" Grid.ColumnSpan="3">
+                <Button  x:Name="causeError" VerticalAlignment="Top" Click="causeErrorClick" Content="Cause Error" />
+            <Button x:Name="buttonLoadScenario" VerticalAlignment="Top" Click="loadScenarioClick" Content="Load&#xA;" Height="20"/>
+            <Button x:Name="buttonLoadUnitLocs" VerticalAlignment="Top" Click="loadUnitLocsClick" Content="Load Unit Locs&#xA;" Height="20" 
+                        Button.Style="{StaticResource styleOnlyEnabledWhenLoaded}" />
+
+            <Button x:Name="buttonSaveScenario" VerticalAlignment="Top" 
+                        Command="{StaticResource SaveISowFile}" CommandParameter="{Binding}"
+                        Content="Save&#xA;" Height="20"
+                        />
+        </StackPanel>-->
+
+        <StackPanel Orientation="Horizontal"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Width="Auto" Background="SlateGray" VerticalAlignment="Center">
+
+            <TextBox  VerticalAlignment="Center" HorizontalAlignment="Center" Width="Auto" 
+                        Text="{Binding name, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource styleNameField}" />
+            <!--<CheckBox IsChecked="{Binding isDirty}" MinWidth="20"/>-->
+
+            <TextBox Text="{Binding startTime}" MinWidth="60" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Path=playerEchelon.unit, Mode=OneWay}"  VerticalAlignment="Center" 
+                   Background="BurlyWood" MinHeight="20" MinWidth="120" DragOver="pe_DragOver" Drop="pe_Drop" AllowDrop="True"/>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"  Grid.Row="2" Width="Auto" Background="SlateGray">
+            <StackPanel Orientation="Vertical">
+
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <!--<Label Content="Map:"  Width="Auto" Height="25">
+                    <Label.LayoutTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="90" />
+                        </TransformGroup>
+                    </Label.LayoutTransform>
+                </Label>
+                <Label Content="{Binding map.name}"  Width="Auto" Height="25" Label.LayoutTransform="{StaticResource Rotate}"/>-->
+                <Label Content="Mod:"  Width="Auto" Height="25" Label.LayoutTransform="{StaticResource Rotate}"/>
+                <Label Content="{Binding mod}"  MinWidth="80" Height="25" Width="Auto" Label.LayoutTransform="{StaticResource Rotate}"/>
+            </StackPanel>
+            <!--<StackPanel Orientation="Vertical">
+                <Button  x:Name="buttonZoomIn" VerticalAlignment="Top" Click="map_ZoomIn" Content="+" Height="20" MinWidth="20"
+                         Button.LayoutTransform="{StaticResource Rotate}"/>
+                <Button  x:Name="buttonZoomOut" VerticalAlignment="Top" Click="map_ZoomOut" Content="-" Height="20" MinWidth="20"
+                         Button.LayoutTransform="{StaticResource Rotate}"/>
+                <Button  x:Name="buttonZoomOff" VerticalAlignment="Top" Click="map_ZoomReset" Content="1x" Height="20" MinWidth="20"
+                         Button.LayoutTransform="{StaticResource Rotate}"/>
+                <Button  x:Name="buttonClear" VerticalAlignment="Top" Click="map_ClearDrawings" Content="Clear" Height="20" MinWidth="20"
+                         Button.LayoutTransform="{StaticResource Rotate}"/>
+                <Button  x:Name="buttonUndo" VerticalAlignment="Top" Content="Undo" Height="20" MinWidth="20"
+                         Command="{StaticResource Undo}"
+                         CommandParameter="{Binding ScenarioUndoStack, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                         Button.LayoutTransform="{StaticResource Rotate}"/>
+                <Button  x:Name="buttonRedo" VerticalAlignment="Top" Content="Redo" Height="20" MinWidth="20"
+                         Command="{StaticResource Redo}"
+                         CommandParameter="{Binding ScenarioUndoStack, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                         Button.LayoutTransform="{StaticResource Rotate}"/>
+            </StackPanel>-->
+        </StackPanel>
+
+
+
+
+        <!-- Scenario Buttons -->
+        <StackPanel Orientation="Horizontal"  Grid.Row="3" Width="Auto" Background="SlateGray">
+            <StackPanel Orientation="Vertical">
+
+
+                <!---Button x:Name="buttonDeleteEchelon" VerticalAlignment="Top" 
+                                        Command="{StaticResource DeleteScenarioEchelon}"
+
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}"
+                        Content="Delete Echelon&#xA;" Height="20"
+                        Button.LayoutTransform="{StaticResource Rotate}"/-->
+            </StackPanel>
+
+
+            <StackPanel Orientation="Vertical">
+                <!--<Button x:Name="buttonRemoveFromScenario" AllowDrop="True"  VerticalAlignment="Top" Height="12" 
+                        Command="{StaticResource RandomizePositions}" CommandParameter="{Binding}"
+                        Button.LayoutTransform="{StaticResource Rotate}">
+                    <Image Height="12" Source="images/action_add_16xLG.png"/>
+                    -->
+                <!--Button.Background>
+                        <ImageBrush ImageSource="images/action_add_16xLG.png"/>
+                    </-->
+                <!--Style>
+                        <EventSetter Event="Button.DragOver"  Handler="stv_DragOver"/>
+                        <EventSetter Event="Button.Drop" Handler="stv_Drop"/>
+                        <EventSetter Event="Button.MouseMove" Handler="button_MouseMove"/>
+                        <EventSetter Event="Button.MouseDown" Handler="stv_MouseDown"/>
+                    </-->
+                <!--
+                </Button>-->
+
+
+            </StackPanel>
+        </StackPanel>
+
+        <TabControl Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" HorizontalAlignment="Stretch" >
+            <TabItem Height="40">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Grid.Column="0" Content="Echelons" Margin="1,5,1,5"/>
+                        <Button Grid.Column="1" Content="XXXX" ToolTip="Army" MinWidth="30" Margin="1,5,1,5" Click="stv_CollapseToArmy"/>
+                        <Button Grid.Column="1" Content="XXX"  ToolTip="Corps" MinWidth="30" Margin="1,5,1,5" Click="stv_CollapseToCorps"/>
+                        <Button Grid.Column="1" Content="XX"  ToolTip="Division" MinWidth="30"  Margin="1,5,1,5" Click="stv_CollapseToDivision"/>
+                        <Button Grid.Column="1" Content="X" ToolTip="Brigade" MinWidth="30" Margin="1,5,1,5" Click="stv_CollapseToBrigade"/>
+                        <Button Grid.Column="1" Content="III"  ToolTip="Regiment" MinWidth="30" Margin="1,5,1,5" Click="stv_CollapseToRegiment"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <TreeView x:Name="scenarioTree" Grid.Column="1" Grid.Row="2" Grid.RowSpan="2"
+                  Background="SlateGray"
+                  ItemsSource="{Binding root}"
+                  AllowDrop="True"
+                  ItemTemplate="{StaticResource EchelonTemplate}"
+                  SelectedItemChanged="stv_SelectedItemChanged"
+                  DragOver="stv_DragOver"
+                  Drop="stv_Drop"
+                  MouseMove="stv_MouseMove"
+                  PreviewMouseLeftButtonDown="stv_MouseLeftButtonDown"
+                  PreviewMouseDoubleClick="stv_PreviewMouseDoubleClick"
+                          >
+                    <TreeView.Resources>
+                        <!-- x:Shared="False" forces the new creation of that object whenever referenced -->
+                        <InputBindingCollection x:Shared="False" x:Key="InputBindings">
+                            <!--KeyBinding Key="C" Command="{StaticResource DeleteScenarioEchelon}" CommandParameter="{Binding}" /-->
+                        </InputBindingCollection>
+
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TreeViewItem">
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox Margin="2" Name="checkBox1"/>
+                                            <Border Padding="2">
+                                                <ContentPresenter Name="PART_header" ContentSource="Header"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                    </TreeView.Resources>
+
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Header="{Binding niceName}"/>
+                                        <MenuItem Header="Set as Player Character"  CommandParameter="{Binding}">
+                                            <MenuItem.Style>
+                                                <Style TargetType="MenuItem">
+                                                    <EventSetter Event="Click" Handler="setPlayerCharacterClick"/>
+                                                </Style>
+                                            </MenuItem.Style>
+                                            
+                                        </MenuItem>
+                                        <!--<MenuItem Header="Set as Player Character" Click="assignMenuItemPlayerClick" CommandParameter="{Binding}"/>-->
+                                        <!--<MenuItem Header="Set as Player Character" Command="{Binding SetPlayerCharacterCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" CommandParameter="{Binding}"/>-->
+                                        <MenuItem Header="Remove This and All Subordinates" Command="{StaticResource DeleteScenarioEchelon}" CommandParameter="{Binding}"/>
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Background" Value="{Binding unit, Converter={StaticResource RankToBrushConverter}}"/>
+
+                            <Setter Property="IsExpanded" Value="True"/>
+                            <EventSetter Event="TreeViewItem.DragOver"  Handler="stv_DragOver"/>
+                            <EventSetter Event="TreeViewItem.Drop" Handler="stv_Drop"/>
+                            <EventSetter Event="TreeViewItem.MouseMove" Handler="stv_MouseMove"/>
+                            <EventSetter Event="TreeViewItem.PreviewMouseLeftButtonDown" Handler="stv_MouseLeftButtonDown"/>
+                            <EventSetter Event="PreviewMouseDoubleClick" Handler="stv_PreviewMouseDoubleClick"/>
+
+                        </Style>
+
+                    </TreeView.ItemContainerStyle>
+
+
+                </TreeView>
+            </TabItem>
+            <!--CellEditEnding="dataGrid_CellEditEnding">-->
+            <TabItem>
+                <TabItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="Objectives"/>
+                        <!--<TextBlock Grid.Column="1" Text="{Binding Count, StringFormat=[{0}]}" />-->
+                        <Button Grid.Column="2" FontSize="8" Content="Hide" Height="20" Click="mapPanel_HideAllObjectivesClick"/>
+                        <Button Grid.Column="3" FontSize="8" Content="Show" Height="20" Click="mapPanel_ShowAllObjectivesClick"/>
+                    </Grid>
+                </TabItem.Header>
+                <!--locationsList is bound in AssignItmesSources-->
+                <!--<ListBox x:Name="locationsList"></ListBox>-->
+                <DataGrid x:Name="objectiveDataGrid" AutoGenerateColumns="False" Background="SlateGray"
+                          CanUserAddRows="False"
+                  FrozenColumnCount="2"
+                  SelectedValuePath="id"
+                  SelectionMode="Extended"
+                  SelectionUnit="FullRow"
+                  MouseMove="odg_MouseMove"
+                  MouseDown="odg_MouseDown"  
+                  PreviewKeyDown="odg_PreviewKeyDown"
+                  AllowDrop="True"
+                  Drop="odg_Drop">
+
+                    <DataGrid.Resources>
+                        <!--<DataTemplate x:Key="PositionButtonCellTemplate">
+                           <Button Name="PositionButton" Click="PositionButtonClick"  CommandParameter="{Binding}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{Binding south}"/>
+                                    <Label Content="{Binding east}"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>-->
+
+                        <DataTemplate x:Key="PositionButtonCellTemplate">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="PositionButton" Click="PositionButtonClick"  Content=">" CommandParameter="{Binding}"/>
+                                <TextBlock FontSize="8" Text="{Binding south}"/>
+                                <TextBlock FontSize="8" Text=" , "/>
+                                <TextBlock FontSize="8" Text="{Binding east}"/>
+                            </StackPanel>
+                        </DataTemplate>
+
+                        <DataTemplate x:Key="BeginButtonCellTemplate">
+                            <Button Name="BeginButton" Click="odg_BeginButtonClick"  CommandParameter="{Binding}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{Binding beg}"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+
+                        <DataTemplate x:Key="EndButtonCellTemplate">
+                            <Button Name="EndButton" Click="odg_EndButtonClick"  CommandParameter="{Binding}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{Binding end}"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+
+                    </DataGrid.Resources>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Mode=OneWay}"
+                                            DataGridTextColumn.ElementStyle="{StaticResource styleIdShaded}">
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Grid.Row="0">
+                                        <Button Height="22" Width="Auto" Content="+" Click="odg_AddClick"/>
+                                        <TextBlock Text="Id"></TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Name" Binding="{Binding name}"/>
+                        <DataGridTemplateColumn Header="Location" CellTemplate="{StaticResource PositionButtonCellTemplate}"/>
+                        <!--<DataGridTextColumn Header="S" Binding="{Binding south}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="E" Binding="{Binding east}"></DataGridTextColumn>-->
+                        <DataGridTextColumn Header="Radius" Binding="{Binding radius}"/>
+
+                        <DataGridComboBoxColumn Header="Priority" SelectedItemBinding="{Binding priority}" ItemsSource="{Binding Source={StaticResource EObjectivePriority}}" />
+                        <DataGridComboBoxColumn Header="Type" SelectedItemBinding="{Binding type}"  ItemsSource="{Binding Source={StaticResource EObjectiveType}}" />
+                        <DataGridComboBoxColumn  Header="Type" SelectedItemBinding="{Binding ai}"  ItemsSource="{Binding Source={StaticResource EObjectiveAI}}" />
+
+                        <DataGridTextColumn Header="Men" Binding="{Binding men}"/>
+                        <DataGridTextColumn Header="Points" Binding="{Binding points}"/>
+                        <DataGridTextColumn Header="Fatigue" Binding="{Binding fatigue}"/>
+                        <DataGridTextColumn Header="Morale" Binding="{Binding morale}"/>
+                        <DataGridTextColumn Header="Ammo" Binding="{Binding ammo}"/>
+                        <DataGridTextColumn Header="OccMod" Binding="{Binding occMod}"/>
+
+                        <DataGridTemplateColumn Header="Begin" CellTemplate="{StaticResource BeginButtonCellTemplate}"/>
+                        <DataGridTemplateColumn Header="End" CellTemplate="{StaticResource EndButtonCellTemplate}"/>
+
+                        <DataGridTextColumn Header="Interval" Binding="{Binding interval}"/>
+                        <!--<DataGridTextColumn Header="Sprite" Binding="{Binding sprite, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Army1" Binding="{Binding army1, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Army2" Binding="{Binding army2, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Army3" Binding="{Binding army3, Mode=OneWay}"/>-->
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Locations">
+                <!--locationsList is bound in AssignItmesSources-->
+                <!--<ListBox x:Name="locationsList"></ListBox>-->
+                <DataGrid x:Name="mapObjectiveDataGrid" AutoGenerateColumns="False" Background="DarkOliveGreen"
+                  CanUserAddRows="False"
+                  FrozenColumnCount="2"
+                  SelectedValuePath="id"
+                  SelectionMode="Extended"
+                  SelectionUnit="FullRow"
+                  MouseMove="modg_MouseMove"
+                  MouseDown="modg_MouseDown"
+                  AllowDrop="False"
+                  >
+                    <DataGrid.Resources>
+                        <DataTemplate x:Key="PositionButtonCellTemplate">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="PositionButton" Click="PositionButtonClick"  Content=">" CommandParameter="{Binding}"/>
+                                <Label Height="20" FontSize="8" VerticalAlignment="Top"  Content="{Binding south, Mode=OneWay}"/>
+                                <Label Height="20" FontSize="8" VerticalAlignment="Top" Content="{Binding east, Mode=OneWay}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGrid.Resources>
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Mode=OneWay}"
+                                            DataGridTextColumn.ElementStyle="{StaticResource styleIdShaded}"/>
+                        <DataGridTemplateColumn Header="Location" CellTemplate="{StaticResource PositionButtonCellTemplate}"/>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Forts">
+                <!--locationsList is bound in AssignItmesSources-->
+                <!--<ListBox x:Name="locationsList"></ListBox>-->
+                <DataGrid x:Name="fortsDataGrid" AutoGenerateColumns="False" Background="DarkOliveGreen"
+                  CanUserAddRows="False"
+                  FrozenColumnCount="2"
+                  SelectedValuePath="id"
+                  SelectionMode="Extended"
+                  SelectionUnit="FullRow"
+                  MouseMove="fdg_MouseMove"
+                  MouseDown="fdg_MouseDown"
+                  AllowDrop="False" Margin="0,-6,0.2,6">
+                    <DataGrid.Resources>
+                        <DataTemplate x:Key="PositionButtonCellTemplate">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="PositionButton" Click="PositionButtonClick"  Content=">" CommandParameter="{Binding}"/>
+                                <Label Height="20" FontSize="8" VerticalAlignment="Top"  Content="{Binding south, Mode=OneWay}"/>
+                                <Label Height="20" FontSize="8" VerticalAlignment="Top" Content="{Binding east, Mode=OneWay}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Mode=OneWay}"
+                                            DataGridTextColumn.ElementStyle="{StaticResource styleIdShaded}">
+                        </DataGridTextColumn>
+                        <DataGridTemplateColumn Header="Location" CellTemplate="{StaticResource PositionButtonCellTemplate}"/>
+                        <DataGridTextColumn Header="Offense" Binding="{Binding offense}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Defense" Binding="{Binding defense}" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Messages">
+                <DataGrid x:Name="screensDataGrid" MinHeight="100" Background="MintCream"
+                  ItemsSource="{Binding screenMessages.Values}"
+                          AutoGenerateColumns="False"
+                  MouseMove="mdg_MouseMove"
+                  MouseDown="mdg_MouseDown"
+                   >
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header ="Id" Binding="{Binding id, Mode=OneWay}"/>
+                        <DataGridTextColumn Header ="Contents" Binding="{Binding contents, Mode=OneWay}"/>
+                    </DataGrid.Columns>
+
+                </DataGrid>
+            </TabItem>
+
+        </TabControl>
+
+        <Grid Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Button Content="Show/Hide"  Grid.Row="0" Grid.Column="0"  Click="ShowHideOOBUI"/>
+            <TextBox  Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4"  Text="{Binding orderOfBattle.name, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="Auto" 
+                         Style="{StaticResource styleNameField}" Background="DimGray" />
+            <Button Content="XXXX" Grid.Row="1" Grid.Column="0" ToolTip="Army" MinWidth="30" Margin="1,5,1,5" Click="otv_CollapseToArmy"/>
+            <Button Content="XXX"  Grid.Row="1" Grid.Column="1" ToolTip="Corps" MinWidth="30" Margin="1,5,1,5" Click="otv_CollapseToCorps"/>
+            <Button Content="XX"   Grid.Row="1" Grid.Column="2" ToolTip="Division" MinWidth="30"  Margin="1,5,1,5" Click="otv_CollapseToDivision"/>
+            <Button Content="X"  Grid.Row="1" Grid.Column="3" ToolTip="Brigade" MinWidth="30" Margin="1,5,1,5" Click="otv_CollapseToBrigade"/>
+            <Button Content="III"  Grid.Row="1" Grid.Column="4" ToolTip="Regiment" MinWidth="30" Margin="1,5,1,5" Click="otv_CollapseToRegiment"/>
+        </Grid>
+        <StackPanel Orientation="Horizontal"  Grid.Row="5" Grid.RowSpan="2" Width="Auto" Background="DimGray">
+            <StackPanel Orientation="Vertical">
+                <!--<Button x:Name="buttonLoadOrderOfBattle" VerticalAlignment="Top" Click="loadOrderOfBattleClick" Content="Load Order Of Battle&#xA;" Height="20"
+                        Button.LayoutTransform="{StaticResource Rotate}"/>-->
+
+
+                <!--<Button x:Name="buttonSaveOrderOfBattle" VerticalAlignment="Top" 
+                        Command="{StaticResource SaveISowFile}" CommandParameter="{Binding orderOfBattle}"
+                        Content="Save&#xA;" Height="20"
+                        Button.LayoutTransform="{StaticResource Rotate}"/>-->
+
+                <!--<Button x:Name="buttonPrintOrderOfBattle" VerticalAlignment="Top" Command="{StaticResource PrintISowFile}" CommandParameter="{Binding orderOfBattle}" Content="Print&#xA;" Height="20"
+                       Button.LayoutTransform="{StaticResource Rotate}"/>-->
+
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <!--<Label Content="OOB:"  Width="Auto" Height="25">
+                    <Label.LayoutTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="90" />
+                        </TransformGroup>
+                    </Label.LayoutTransform>
+                </Label>-->
+
+                <!--<ComboBox ItemsSource="{Binding  orderOfBattle.config.mods}" 
+                        DisplayMemberPath="{Binding orderOfBattle.mod}" 
+                        SelectedValuePath="{Binding orderOfBattle.mod}"  
+                        SelectedValue="{Binding  orderOfBattle.mod}" 
+                        Width="Auto" Height="25" ComboBox.LayoutTransform="{StaticResource Rotate}"
+                          />-->
+                <Label Content="Mod:" VerticalAlignment="Center" HorizontalAlignment="Center" Width="Auto" Height="25"
+                          Label.LayoutTransform="{StaticResource Rotate}"/>
+
+                <Label Content="{Binding orderOfBattle.mod}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="Auto" Height="25"
+                          Label.LayoutTransform="{StaticResource Rotate}"/>
+
+                <TextBox Text="{Binding orderOfBattle.name}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="Auto" Height="25"
+                         Style="{StaticResource styleNameField}" TextBox.LayoutTransform="{StaticResource Rotate}"/>
+
+            </StackPanel>
+        </StackPanel>
+
+        <Menu  Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="3" Background="DimGray">
+            <MenuItem Header="_Order of Battle" >
+                <MenuItem Header="Load Order Of Battle"  Click="loadOrderOfBattleClick"/>
+                <!--<MenuItem Header="Save Order Of Battle"   Command="{StaticResource SaveISowFile}" CommandParameter="{Binding orderOfBattle}"/>-->
+
+            </MenuItem>
+            <MenuItem Header="_Edit" />
+            <MenuItem Header="_Help" />
+        </Menu>
+
+
+
+                <TreeView x:Name="orderOfBattleTree" Grid.Column="1" Grid.Row="5" 
+                  Background="DarkGray"
+                  ItemsSource="{Binding orderOfBattle.root}"
+                  AllowDrop="True"
+                  ItemTemplate="{StaticResource EchelonTemplate}"
+                  SelectedItemChanged="otv_SelectedItemChanged" >
+
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Header="{Binding niceName}"/>
+                                        <MenuItem Header="Add Child" Command="{StaticResource AddChilOOBEchelon}" CommandParameter="{Binding}"/>
+                                        <MenuItem Header="Remove This and All Children" Command="{StaticResource DeleteOOBEchelon}" CommandParameter="{Binding}"/>
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="IsExpanded" Value="True"/>
+                            <Setter Property="Background" Value="{Binding unit, Converter={StaticResource RankToBrushConverter}}"/>
+                            <EventSetter Event="TreeViewItem.DragOver"  Handler="otv_DragOver"/>
+                            <EventSetter Event="TreeViewItem.Drop" Handler="otv_Drop"/>
+                            <EventSetter Event="TreeViewItem.MouseMove" Handler="otv_MouseMove"/>
+                            <EventSetter Event="TreeViewItem.PreviewMouseLeftButtonDown" Handler="otv_MouseLeftButtonDown"/>
+
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                </TreeView>
+ 
+
+
+        <DataGrid x:Name="orderOfBattleDataGrid" AutoGenerateColumns="False" ItemsSource="{Binding orderOfBattle}" 
+                                        Background="DarkGray"
+                          Grid.Row="5" Grid.Column="2"
+                          SelectedValuePath="id"
+                  FrozenColumnCount="2"
+                  SelectionMode="Extended"
+                  SelectionUnit="CellOrRowHeader"
+                  PreviewKeyDown="oobdg_PreviewKeyDown"
+                  
+                  CellEditEnding="dataGrid_CellEditEnding"
+                  DataGrid.CellStyle ="{StaticResource  styleUnitCell}" Margin="0,0,5,0">
+
+            <DataGrid.Resources>
+                <DataTemplate x:Key="oWeaponTemplate">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Button Name="WeaponButton" Click="oobdg_WeaponButtonClick" Content="::"/>
+                        <TextBox Text="{Binding weapon, Mode=OneWay }" IsReadOnly="True" />
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate x:Key="oFlag1Template">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Button Name="FlagButton" Click="oobdg_Flag1ButtonClick" Content="::"/>
+                        <TextBox Text="{Binding flag, Mode=OneWay }" IsReadOnly="True" />
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate x:Key="oFlag2Template">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Button Name="FlagButton" Click="oobdg_Flag2ButtonClick" Content="::"/>
+                        <TextBox Text="{Binding flag2, Mode=OneWay }" IsReadOnly="True" />
+                    </StackPanel>
+                </DataTemplate>
+            </DataGrid.Resources>
+
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Rank" SortMemberPath="echelon.id" IsReadOnly="True"  CellTemplate="{StaticResource sRankTemplate}"/>
+                <!--<DataGridTextColumn Header="Rank" Binding="{Binding echelon.rank}" SortMemberPath="echelon.id" IsReadOnly="True" DataGridTextColumn.ElementStyle="{StaticResource styleEchelonRankShaded}"/>-->
+                <DataGridTextColumn Header="Id" Binding="{Binding id}" CellStyle="{StaticResource styleId}"/>
+                <DataGridTextColumn Header ="Name 1" Binding="{Binding name1}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Name 2" Binding="{Binding name2}"></DataGridTextColumn>
+                <DataGridComboBoxColumn Header="Unit Class" Width="100" x:Name="unitClass" SelectedValueBinding="{Binding unitClass, Mode=TwoWay}" DisplayMemberPath="{Binding unitClass}"></DataGridComboBoxColumn>
+                <DataGridTextColumn Header="OOB Config" Binding="{Binding oobconfig}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Portrait" Binding="{Binding portrait}"></DataGridTextColumn>
+                <!--<DataGridComboBoxColumn Header="Weapon" Width="100" x:Name="weapon" SelectedValueBinding="{Binding weapon, Mode=TwoWay}" DisplayMemberPath="{Binding weapon}"></DataGridComboBoxColumn>-->
+                <!--<DataGridComboBoxColumn Header="Flag" Width="100" x:Name="flag" SelectedValueBinding="{Binding unitClass, Mode=TwoWay}" DisplayMemberPath="{Binding flag}"></DataGridComboBoxColumn>
+                <DataGridComboBoxColumn Header="Flag2" Width="100" x:Name="flag2" SelectedValueBinding="{Binding unitClass, Mode=TwoWay}" DisplayMemberPath="{Binding flag2}"></DataGridComboBoxColumn>-->
+
+                <DataGridTemplateColumn Header="Weapon" CellTemplate="{StaticResource oWeaponTemplate}"/>
+
+
+                <DataGridTemplateColumn Header="Flag 1" CellTemplate="{StaticResource oFlag1Template}"/>
+                <DataGridTemplateColumn Header="Flag 2" CellTemplate="{StaticResource oFlag2Template}"/>
+
+
+                <DataGridTextColumn Header="headCount" Binding="{Binding headCount}"></DataGridTextColumn>
+                <DataGridTextColumn Header="ammo" Binding="{Binding ammo}"></DataGridTextColumn>
+                <DataGridTemplateColumn Header="Formation" CellTemplate="{StaticResource FormationTemplate}"/>
+
+                <!--<DataGridComboBoxColumn Header="Formation" Width="100" x:Name="oformation" SelectedValueBinding="{Binding formation, Mode=TwoWay}" DisplayMemberPath="{Binding formation}"></DataGridComboBoxColumn>-->
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+
+
+        <GridSplitter Grid.Row="2" Grid.Column="3"  Grid.ColumnSpan="4"
+            Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+            ResizeBehavior="CurrentAndNext"
+            Background="#FFBCBCBC"/>
+
+        <GridSplitter Grid.Row="4" Grid.ColumnSpan="4"
+            Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+            ResizeBehavior="PreviousAndNext"
+            Background="#FFBCBCBC"/>
+
+        <GridSplitter Grid.Row="6" Grid.ColumnSpan="4"
+            Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+            ResizeBehavior="PreviousAndNext"
+            Background="#FFBCBCBC"/>
+
+        <GridSplitter Grid.Column="1" Grid.Row="1" Grid.RowSpan="5" ResizeDirection="Auto"
+                Width="5" HorizontalAlignment="Right" VerticalAlignment="Stretch"
+    
+                 Background="#FFBCBCBC"/>
+
+        <TabControl Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" SelectionChanged="infoTab_SelectionChanged" >
+            <TabItem Header="Help">
+                <Grid>
+                    <WebBrowser Name="helpWebBrowser"></WebBrowser>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Python">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Menu  Grid.Row="0" Grid.ColumnSpan="3" IsMainMenu="True">
+                        <MenuItem Header="_File" >
+                            <MenuItem Header="Import Script from File"  Click="python_ImportScript"/>
+                            <MenuItem Header="Execute Script from File"  Click="python_ExecuteScript"/>
+                        </MenuItem>
+                        <MenuItem Header="_Edit" >
+                            <MenuItem Header="Execute"  Click="python_Execute"/>
+                            <MenuItem Header="Execute and Clear"  Click="python_ExecuteAndClear"/>
+
+                        </MenuItem>
+                    </Menu>
+                    <TextBox Background="DarkBlue" Foreground="AntiqueWhite" Grid.Row="1" Name="pythonOutput"  TextWrapping="Wrap" HorizontalScrollBarVisibility="Visible"
+VerticalScrollBarVisibility="Auto" IsReadOnly="True"/>
+                    <TextBox  Background="Black" Foreground="YellowGreen" Grid.Row="2" Name="pythonInput" KeyUp="python_KeyUp" TextWrapping="Wrap" HorizontalScrollBarVisibility="Visible"
+VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem DataContext="{Binding Source={x:Static SOW:Log.Warnings}}">
+                <TabItem.Header>
+                    <TextBlock Background="Yellow" Text="{Binding Count, StringFormat=Warnings {0}}" />
+                </TabItem.Header>
+                <ListBox   ItemsSource="{Binding}" />
+            </TabItem>
+
+            <TabItem DataContext="{Binding Source={x:Static SOW:Log.Errors}}">
+                <TabItem.Header>
+                    <TextBlock Background="Red" Text="{Binding Path=Count, StringFormat=Errors {0}}" />
+                </TabItem.Header>
+                <ListBox   ItemsSource="{Binding}" />
+            </TabItem>
+
+            <TabItem Name="undoTab" DataContext="{Binding ScenarioUndoStack, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
+                <TabItem.Header>
+                    <TextBlock Background="Green" Text="{Binding Path=UndoCount, StringFormat=Undo {0}}" />
+                </TabItem.Header>
+                <ListBox Name="undoTabListBox" DisplayMemberPath="name"/>
+                <!--<ListBox ItemsSource="{Binding Path=UndoStack}" DisplayMemberPath="name"/>-->
+            </TabItem>
+        </TabControl>
+    </Grid>
+
+</Window>
+
